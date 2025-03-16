@@ -8,10 +8,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useOnboardingVendorStore } from "../store";
 import { motion, AnimatePresence } from "framer-motion";
 import { VendorBrand } from "./vendor-branding";
+import { BusinessInfo } from "./business-info";
+import { Button } from "@/components/ui/button";
 
 const OnboardingForm = () => {
   const searchParams = useSearchParams();
-  const step = parseInt(searchParams.get("step") || 1);
+  const step = parseInt(searchParams.get("step") || "1");
   const router = useRouter();
 
   const handleStepChange = (nextStep: number) => {
@@ -36,15 +38,6 @@ const OnboardingForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div>
-          {[1, 2].map((num) => (
-            <div
-              key={num}
-              className={`h-2 w-full rounded-full ${step >= num ? "bg-primary" : "bg-muted"}`}
-            />
-          ))}
-        </div>
-
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
@@ -54,37 +47,19 @@ const OnboardingForm = () => {
             transition={{ duration: 0.3 }}
           >
             {step === 1 && <VendorBrand form={form} />}
-            {step === 2 && <AccountStep />}
+            {step === 2 && <BusinessInfo form={form} />}
           </motion.div>
         </AnimatePresence>
 
         <div className="mt-8 flex justify-between">
-          {step > 1 && (
-            <button
-              type="button"
-              onClick={() => setStep((s) => s - 1)}
-              className="btn-secondary"
-            >
-              Back
-            </button>
-          )}
-
+          <Button disabled={step <= 1}>Prev</Button>
           {step < 2 ? (
-            <button
-              type="button"
-              onClick={() =>
-                methods
-                  .trigger()
-                  .then((isValid) => isValid && setStep((s) => s + 1))
-              }
-              className="btn-primary ml-auto"
-            >
-              Next
-            </button>
+            <Button onClick={() => handleStepChange(step + 1)}>Next</Button>
           ) : (
-            <button type="submit" className="btn-primary">
-              Submit
-            </button>
+            <Button className="" type="submit">
+              {" "}
+              Submit{" "}
+            </Button>
           )}
         </div>
       </form>

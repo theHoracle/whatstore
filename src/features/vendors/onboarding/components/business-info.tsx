@@ -7,8 +7,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
-import { Input } from "@/components/ui/input";
+
 import { OnboardingVendorSchema } from "../schema";
+import { Textarea } from "@/components/ui/textarea";
 
 const BusinessInfo = ({
   form,
@@ -16,20 +17,22 @@ const BusinessInfo = ({
   form: UseFormReturn<OnboardingVendorSchema>;
 }) => {
   return (
-    <FormField
-      control={form.control}
-      name="username"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>Username</FormLabel>
-          <FormControl>
-            <Input placeholder="John" {...field} />
-          </FormControl>
-          <FormDescription>This is your username.</FormDescription>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+    <div>
+      <FormField
+        control={form.control}
+        name="description"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Description</FormLabel>
+            <FormControl>
+              <Textarea placeholder="John" {...field} />
+            </FormControl>
+            <FormDescription>This is your username.</FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
   );
 };
 
