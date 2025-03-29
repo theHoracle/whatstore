@@ -1,3 +1,4 @@
+"use server";
 import { auth } from "@clerk/nextjs/server";
 
 export const getToken = async () => {
@@ -6,3 +7,7 @@ export const getToken = async () => {
     console.log('token', token);
     return token; 
 }
+
+
+
+// TODO: TO BE REMOVED
