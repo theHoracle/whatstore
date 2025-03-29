@@ -26,7 +26,7 @@ export const onboardingVendor = z.object({
   description: z.string().min(20, {
     message: "Description should be at least 20 characters",
   }),
-  vendorType: z.string(),
+  
 });
 
 export type OnboardingVendorSchema = z.infer<typeof onboardingVendor>;

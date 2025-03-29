@@ -23,6 +23,7 @@ import {
 } from "../schema";
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
+import { createVendor } from "@/app/new-vendor/action";
 
 const OnboardingForm = () => {
   const state = useOnboardingVendorStore((state) => state);
@@ -32,17 +33,18 @@ const OnboardingForm = () => {
     defaultValues: {
       name: "",
       image: "",
-      description: "",
-      vendorType: "",
+      description: "", 
     },
   });
 
-  const onSubmit = (values: OnboardingVendorSchema) => {
+  const onSubmit = async (values: OnboardingVendorSchema) => {
     state.setData(values);
-    console.log({
-      ...values,
-      ...state,
+    const newStore = await createVendor({
+      storeName: values.name,
+      storeDescription: values.description,
+      storeLogo: values.image[0],
     });
+    console.log("New store created:", newStore); 
   };
 
   return (
