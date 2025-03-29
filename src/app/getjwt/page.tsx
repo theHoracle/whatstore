@@ -1,22 +1,24 @@
 "use client"
+
 import { Button } from "@/components/ui/button"
-import { auth } from "@clerk/nextjs/server"
 import { useState } from "react";
+import { getToken } from "./actions";
 
 const JwtPage = () => {
     const [jwtToken, setJwtToken] = useState<string | null>(null);
 
-    const getToken = async () => {
-        const {getToken} = await auth();
+    async function onClick() {
         const token = await getToken();
         console.log('token', token);
-        setJwtToken(token);
+        if (token) {    
+            setJwtToken(token);
+        }
     }
     return <div className="px-4 py-2">
         <h1 className="text-2xl font-bold">Get JWT</h1>
         <p className="text-gray-600">This page is used to get a JWT token for the user.</p>
         <div>
-        <Button onClick={getToken}>
+        <Button onClick={onClick} className="mt-4">
             Get JWT
         </Button>
 
