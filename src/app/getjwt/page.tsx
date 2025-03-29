@@ -30,4 +30,7 @@ const JwtPage = () => {
         }
     </div>
     </div>
+
 }
+
+export default JwtPage;

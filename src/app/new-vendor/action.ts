@@ -1,7 +1,7 @@
 // Post endpoint to create a new vendor
-type VendorData = {
+// type VendorData = {
     
-}
-const createVendor = async (vendorData: VendorData) => {
+// }
+// const createVendor = async (vendorData: VendorData) => {
 
-}
+// }
