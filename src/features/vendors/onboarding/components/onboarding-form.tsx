@@ -2,6 +2,8 @@
 
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOnboardingVendorStore } from "../store";
@@ -26,8 +28,28 @@ import { Textarea } from "@/components/ui/textarea";
 import { createVendor } from "@/app/new-vendor/action";
 
 const OnboardingForm = () => {
+  const router = useRouter();
   const state = useOnboardingVendorStore((state) => state);
   const [preview, setPreview] = useState("/placeholder.png");
+  
+  const { mutate: createVendorMutation, isPending } = useMutation({
+    mutationFn: createVendor,
+    onSuccess: (data) => {
+      if (data.success) {
+        router.push("/dashboard");
+      } else {
+        form.setError("root", { 
+          message: data.error || "Failed to create vendor" 
+        });
+      }
+    },
+    onError: (error) => {
+      form.setError("root", { 
+        message: error instanceof Error ? error.message : "Something went wrong" 
+      });
+    }
+  });
+
   const form = useForm<OnboardingVendorSchema>({
     resolver: zodResolver(onboardingVendor),
     defaultValues: {
@@ -39,20 +61,22 @@ const OnboardingForm = () => {
 
   const onSubmit = async (values: OnboardingVendorSchema) => {
     state.setData(values);
-    const newStore = await createVendor({
+    createVendorMutation({
       storeName: values.name,
       storeDescription: values.description,
       storeLogo: values.image[0],
     });
-    console.log("New store created:", newStore); 
   };
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex flex-col gap-4"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        {form.formState.errors.root && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {form.formState.errors.root.message}
+          </div>
+        )}
+        
         <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 lg:gap-8 w-full">
           <FormField
             control={form.control}
@@ -140,8 +164,8 @@ const OnboardingForm = () => {
           />
         </div>
 
-        <Button className="" size="lg" type="submit">
-          Submit
+        <Button className="" size="lg" type="submit" disabled={isPending}>
+          {isPending ? "Creating..." : "Submit"}
         </Button>
       </form>
     </Form>
