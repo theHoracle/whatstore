@@ -5,7 +5,16 @@ import { useState } from "react";
 import { ThemeProvider } from "./theme-provider";
 
 const ClientProvider = ({ children }: { children: React.ReactNode }) => {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(() => new QueryClient(
+    {
+      defaultOptions: {
+        queries: {
+          retry: 1,
+          refetchOnWindowFocus: true,
+        },
+      },
+    }
+  ));
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -35,7 +35,7 @@ export const apiCall = {
 
 export async function getCurrentUser(): Promise<User | null> {
   try {
-    const response = await apiCall.get<User>('/me');
+    const response = await apiCall.get<User>('/users/me');
     return response.data;
   } catch (error) {
     console.error('Error fetching user:', error);
