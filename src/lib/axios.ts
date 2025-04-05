@@ -1,14 +1,15 @@
-import { auth } from '@clerk/nextjs/server';
+
 import axios, { AxiosResponse } from 'axios';
 import applyCaseMiddleware from 'axios-case-converter';
 import { User } from '@/types/api';
+import { useAuth } from '@clerk/nextjs';
 
 const api = applyCaseMiddleware(axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 }));
 
 api.interceptors.request.use(async (config) => {
-  const { getToken } = await auth();
+  const { getToken } = useAuth();
   const token = await getToken();
 
   if (token) {
