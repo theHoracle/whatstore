@@ -50,8 +50,11 @@ export interface CreateVendorInput {
 }
 
 // This is the function you'll implement
-export async function createVendor(input: CreateVendorInput) {
+export async function createVendor() {
   // TODO: Implement your API call here
-  const res = api.post('')
-  throw new Error('Not implemented')
+  const res = await  api.post('/vendors') 
+  if (res.status !== 201) {
+    throw new Error('Failed to create vendor')
+  }
+  return res.data
 }
