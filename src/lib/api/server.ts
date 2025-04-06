@@ -1,3 +1,5 @@
+"use server";
+
 import axios, { AxiosResponse } from 'axios';
 import applyCaseMiddleware from 'axios-case-converter';
 import { auth } from '@clerk/nextjs/server';
