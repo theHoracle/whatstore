@@ -12,6 +12,7 @@ const getServerSideUser = async () => {
 }
 
 const getClientSideUser = async (): Promise<User | null> => {
+    "use server"
     const res = await apiClient.get<User>('/users/me');
     if (res.status !== 200) {
         throw new Error('Failed to fetch user');
