@@ -1,8 +1,8 @@
-
-
+"use server"
 import axios, { AxiosResponse } from 'axios';
 import applyCaseMiddleware from 'axios-case-converter';
 import { auth } from '@clerk/nextjs/server';
+import { User } from '@/types/api';
 
 const baseConfig = {
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -19,7 +19,7 @@ serverApi.interceptors.request.use(async (config) => {
   return config;
 });
 
-export const apiServer = {
+const apiServer = {
   get: <TResponse>(url: string) => 
     serverApi.get<TResponse, AxiosResponse<TResponse>>(url),
   post: <TResponse, TRequest = unknown>(url: string, data: TRequest) => 
@@ -30,4 +30,10 @@ export const apiServer = {
     serverApi.delete<TResponse, AxiosResponse<TResponse>>(url),
 };
 
-export default serverApi;
+export const getServerSideUser = async () => { 
+    const res = await apiServer.get<User>('/users/me');
+    if (res.status !== 200) {
+        throw new Error('Failed to fetch user');
+    }
+    return res.data;
+}
