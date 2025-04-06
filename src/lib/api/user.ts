@@ -1,5 +1,7 @@
 import { User } from "@/types/api";
-import { apiClient, apiServer } from "./axios";
+import { apiClient, apiServer } from "@/lib/api"
+
+
 
 const getServerSideUser = async () => {
     const res = await apiServer.get<User>('/users/me');

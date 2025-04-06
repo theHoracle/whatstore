@@ -1,4 +1,5 @@
-import api from "@/lib/api/axios"
+import { apiClient } from "@/lib/api";
+
 
 export interface CreateVendorInput {
   name: string;
@@ -16,7 +17,7 @@ export interface CreateStoreInput {
 }
 
 export async function createVendor() {  
-  const res = await api.post('/vendors')
+  const res = await apiClient.post('/vendors', {})
 
   if (res.status !== 201) {
     throw new Error('Failed to create vendor')
@@ -25,7 +26,7 @@ export async function createVendor() {
 }
 
 export async function createStore(data: CreateStoreInput) {
-  const res = await api.post('/vendors/store', data)
+  const res = await apiClient.post('/vendors/store', data)
   if (res.status !== 201) {
     throw new Error('Failed to create store')
   }
