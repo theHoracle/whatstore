@@ -1,4 +1,4 @@
-import api from "@/lib/axios"
+import api from "@/lib/api/axios"
 
 export interface CreateVendorInput {
   name: string;

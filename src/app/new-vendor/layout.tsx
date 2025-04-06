@@ -1,3 +1,4 @@
+"use client"
 import { Progress } from "@/components/ui/progress"
 import { useOnboardingStore } from "@/features/vendors/onboarding/store"
 

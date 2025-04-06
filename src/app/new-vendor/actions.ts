@@ -1,6 +1,6 @@
 "use server"
 
-import api from "@/lib/axios";
+import api from "@/lib/api/axios";
 
 // Post endpoint to create a new vendor
 type VendorData = {
