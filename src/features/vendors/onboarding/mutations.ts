@@ -1,60 +1,34 @@
 import api from "@/lib/axios"
-import supabase from "@/utils/supabase/server"
-
-const bucketName = process.env.SUPABASE_BUCKET_NAME as string
-
-export async function uploadImage(file: File, path: string) {
-  const { data, error } = await supabase.storage
-    .from(bucketName)
-    .upload(`${path}/${crypto.randomUUID()}`, file, {
-      cacheControl: '3600',
-      upsert: false
-    })
-
-  if (error) { 
-    console.error('Error uploading image:', error)
-    throw error
-  }
-
-  // Get public URL
-  const { data: { publicUrl } } = supabase.storage
-    .from(bucketName)
-    .getPublicUrl(data.path)
-
-  return publicUrl
-}
-
-export async function uploadImages(files: File[], path: string) {
-  const uploadPromises = files.map(file => uploadImage(file, path))
-  return Promise.all(uploadPromises)
-}
+import { uploadImage, uploadImages } from "@/utils/upload"
 
 export interface CreateVendorInput {
-  vendorInfo: {
-    name: string;
-    imageUrl: string;
-    description: string;
-  };
-  storePreferences: {
-    storeName: string;
-    storeUrl: string;
-    currency: string;
-    country: string;
-  };
-  firstProduct: {
-    name: string;
-    description: string;
-    price: number;
-    imageUrls: string[];
-  };
+  name: string;
+  email: string;
+  phone?: string;
+  image: File;
+  description: string;
 }
 
-// This is the function you'll implement
-export async function createVendor() {
-  // TODO: Implement your API call here
-  const res = await  api.post('/vendors') 
+export interface CreateStoreInput {
+  storeName: string;
+  storeUrl: string;
+  currency: string;
+  country: string;
+}
+
+export async function createVendor() {  
+  const res = await api.post('/vendors')
+
   if (res.status !== 201) {
     throw new Error('Failed to create vendor')
+  }
+  return res.data
+}
+
+export async function createStore(data: CreateStoreInput) {
+  const res = await api.post('/vendors/store', data)
+  if (res.status !== 201) {
+    throw new Error('Failed to create store')
   }
   return res.data
 }

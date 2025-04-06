@@ -26,12 +26,6 @@ export function FirstProductForm() {
   const router = useRouter();
   const { setFirstProduct, setIsUploading, vendorInfo, storePreferences } = useOnboardingStore();
 
-  // Redirect if previous steps are not completed
-  if (!vendorInfo.name || !storePreferences.storeName) {
-    router.push("/new-vendor");
-    return null;
-  }
-
   const form = useForm<FirstProductSchema>({
     resolver: zodResolver(firstProductSchema),
     defaultValues: {
@@ -39,6 +33,13 @@ export function FirstProductForm() {
       images: [],
     },
   });
+
+  // Redirect if previous steps are not completed
+  if (!vendorInfo.name || !storePreferences.storeName) {
+    router.push("/new-vendor");
+    return null;
+  }
+
 
   const onSubmit = async (data: FirstProductSchema) => {
     try {
@@ -68,7 +69,7 @@ export function FirstProductForm() {
       };
 
       // Call your API
-      await createVendor(vendorData);
+      await createVendor();
       
       router.push("/dashboard");
     } catch (error) {

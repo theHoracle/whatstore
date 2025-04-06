@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import { storePreferencesSchema, type StorePreferencesSchema } from "../schema";
 import { useOnboardingStore } from "../store";
 import { toast } from "sonner";
+import { createStore } from "../mutations";
 
 const CURRENCIES = [
   { label: "NGN - Nigerian Naira", value: "NGN" },
@@ -53,12 +54,13 @@ export function StorePreferencesForm() {
 
   const onSubmit = async (data: StorePreferencesSchema) => {
     try {
+      await createStore(data);
       setStorePreferences(data);
       setStep(3);
       router.push("/new-vendor/product");
     } catch (error) {
       toast("Error", {
-        description: "Something went wrong. Please try again.",
+        description: "Failed to create store. Please try again.",
       });
     }
   };

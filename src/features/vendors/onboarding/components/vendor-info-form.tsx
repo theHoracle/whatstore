@@ -19,16 +19,15 @@ import { useState } from "react";
 import { vendorInfoSchema, type VendorInfoSchema } from "../schema";
 import { useOnboardingStore } from "../store";
 import { toast } from "sonner";
-import { uploadImage } from "../mutations";
+import { createVendor } from "../mutations";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/hooks/use-auth";
 
 
 export function VendorInfoForm() {
   const [isEditing, setIsEditing] = useState(false);
-  const [preview, setPreview] = useState<string>();
   const { data: user } = useAuth();
-
+  const [preview, setPreview] = useState<string>(user?.avatarUrl || "");
   
   const router = useRouter();
   const { setVendorInfo, setStep, setIsUploading } = useOnboardingStore();
@@ -38,27 +37,21 @@ export function VendorInfoForm() {
     defaultValues: {
       name: user?.name || "",
       email: user?.email || "",
-     // phone: user?.phone || "",
+     
     },
   });
 
   const onSubmit = async (data: VendorInfoSchema) => {
     try {
       setIsUploading(true);
-      const imageUrl = await uploadImage(data.image[0], 'vendor-logos');
+      await createVendor();
       
-      const vendorData = {
-        ...data,
-        image: imageUrl,
-        isProfileUpdated: isEditing,
-      };
-      
-      setVendorInfo(vendorData);
+      setVendorInfo(data);
       setStep(2);
       router.push("/new-vendor/store");
     } catch (error) {
       toast("Error", {
-        description: "Failed to upload image. Please try again.",
+        description: "Failed to create vendor profile. Please try again.",
       });
     } finally {
       setIsUploading(false);
