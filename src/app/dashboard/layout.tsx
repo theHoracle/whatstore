@@ -13,7 +13,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { getCurrentUser } from "@/lib/api/axios";
+import { getServerSideUser } from "@/lib/api/user";
+
 import { redirect } from "next/navigation";
 
 export default async function VendorLayout({
@@ -21,7 +22,7 @@ export default async function VendorLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
+  const user = await getServerSideUser();
   if (!user) {
     redirect("/");
   } else if (!user.vendor) {
