@@ -19,7 +19,8 @@ import { useState } from "react";
 import { firstProductSchema, type FirstProductSchema } from "../schema";
 import { useOnboardingStore } from "../store";
 import { toast } from "sonner";
-import { uploadImages, createVendor } from "../mutations";
+import { createVendor } from "../mutations";
+import { uploadImages } from "@/utils/upload";
 
 export function FirstProductForm() {
   const [previews, setPreviews] = useState<string[]>([]);

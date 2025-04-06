@@ -1,5 +1,4 @@
 import api from "@/lib/axios"
-import { uploadImage, uploadImages } from "@/utils/upload"
 
 export interface CreateVendorInput {
   name: string;
