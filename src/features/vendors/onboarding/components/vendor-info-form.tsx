@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createVendor } from "../mutations";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
@@ -10,13 +10,13 @@ import { useAuth } from "@/hooks/use-auth";
 export function VendorInfoForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-
   const { data: user } = useAuth();
 
-  if(user && user.vendor) {
-    router.push("/new-vendor/store");
-    return null;
-  }
+  useEffect(() => {
+    if (user?.vendor) {
+      router.push("/new-vendor/store");
+    }
+  }, [user, router]);
 
   const onClick = async () => {
     try {
@@ -34,6 +34,10 @@ export function VendorInfoForm() {
       setIsLoading(false);
     }
   };
+
+  if (user?.vendor) {
+    return null;
+  }
 
   return (
     <Button 
