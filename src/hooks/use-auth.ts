@@ -6,6 +6,6 @@ export const useAuth = () => {
     return useQuery({
         queryKey: ["auth-user"],
         queryFn: getClientSideUser,
-        staleTime: 1000 * 60 * 60, // 1 hour
+        staleTime: 10000 * 60, // 10 minutes
     })
 }

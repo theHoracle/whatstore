@@ -46,31 +46,7 @@ export function FirstProductForm() {
     try {
       setIsUploading(true);
       // Upload images and get URLs
-      const imageUrls = await uploadImages(data.images, 'product-images');
-      
-      // Create complete vendor data
-      const vendorData = {
-        vendorInfo: {
-          name: vendorInfo.name!,
-          imageUrl: vendorInfo.image as string,
-          description: vendorInfo.description!,
-        },
-        storePreferences: {
-          storeName: storePreferences.storeName!,
-          storeUrl: storePreferences.storeUrl!,
-          currency: storePreferences.currency!,
-          country: storePreferences.country!,
-        },
-        firstProduct: {
-          name: data.name,
-          description: data.description,
-          price: data.price,
-          imageUrls,
-        },
-      };
-
-      // Call your API
-      await createVendor();
+      const imageUrls = await uploadImages(data.images, 'product-images') 
       
       router.push("/dashboard");
     } catch (error) {

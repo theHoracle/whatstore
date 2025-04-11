@@ -25,6 +25,7 @@ export interface User {
   name: string;
   email: string;
   username: string;
+  phone?: string;
   avatarUrl: string;
   createdAt: string;
   updatedAt: string;

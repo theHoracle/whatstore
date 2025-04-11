@@ -16,17 +16,6 @@ export const vendorInfoSchema = z.object({
     message: "Please enter a valid email address.",
   }),
   phone: z.string().optional(),
-  image: z
-    .any()
-    .refine((files: File[]) => files?.length >= 1, "Image is required")
-    .refine(
-      (files: File[]) => files?.[0]?.size <= MAX_FILE_SIZE,
-      "Max image size is 5MB",
-    )
-    .refine(
-      (files: File[]) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-      "Only .jpg, .jpeg, .png and .webp formats are supported",
-    ),
   description: z.string().min(20, {
     message: "Description should be at least 20 characters",
   }),
@@ -35,8 +24,20 @@ export const vendorInfoSchema = z.object({
 export const storePreferencesSchema = z.object({
   storeName: z.string().min(3),
   storeUrl: z.string().min(3),
-  currency: z.string(),
-  country: z.string(),
+  storeLogo: z.any().refine(
+    (file) => file instanceof File,
+    "Invalid file type"
+  ).refine(
+    (file: File) => file.size <= MAX_FILE_SIZE,
+    "Max image size is 5MB"
+  ).refine(
+    (file: File) =>
+      ACCEPTED_IMAGE_TYPES.includes(file.type),
+    "Only .jpg, .jpeg, .png and .webp formats are supported"
+  ),
+  storeDescription: z.string().min(20),
+  storeWhatsappContact: z.string(),
+  storeAddress: z.string().min(3), 
 });
 
 export const firstProductSchema = z.object({

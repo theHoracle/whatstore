@@ -11,17 +11,21 @@ export interface CreateVendorInput {
 
 export interface CreateStoreInput {
   storeName: string;
+  storeLogo: string;
   storeUrl: string;
-  currency: string;
-  country: string;
+  storeDescription: string;
+  storeWhatsappContact: string;
+  storeAddress: string; 
 }
 
 export async function createVendor() {  
-  const res = await apiClient.post('/vendors', {})
+  const res = await apiClient.post('/vendors', {});
 
   if (res.status !== 201) {
+    console.error('Error creating vendor:', res)
     throw new Error('Failed to create vendor')
   }
+  console.log('Vendor created successfully:', res.data)
   return res.data
 }
 

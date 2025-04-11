@@ -10,58 +10,53 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { storePreferencesSchema, type StorePreferencesSchema } from "../schema";
-import { useOnboardingStore } from "../store";
 import { toast } from "sonner";
 import { createStore } from "../mutations";
+import { useState } from "react";
+import { uploadImage } from "@/utils/upload";
+import Image from "next/image";
 
-const CURRENCIES = [
-  { label: "NGN - Nigerian Naira", value: "NGN" },
-  { label: "USD - US Dollar", value: "USD" },
-  { label: "EUR - Euro", value: "EUR" },
-  { label: "GBP - British Pound", value: "GBP" },
-];
-
-const COUNTRIES = [
-    { label: "Nigeria", value: "NG" }, 
-  { label: "United States", value: "US" },
-  { label: "United Kingdom", value: "GB" },
- 
-  // we will more countries as needed
-];
-
+const basuUrl = process.env.NEXT_PUBLIC_BASE_URL  || "whatstore.com/store/";
 export function StorePreferencesForm() {
   const router = useRouter();
-  const { setStorePreferences, setStep } = useOnboardingStore();
+  const [preview, setPreview] = useState<string>();
+  const [isUploading, setIsUploading] = useState(false);
 
   const form = useForm<StorePreferencesSchema>({
     resolver: zodResolver(storePreferencesSchema),
     defaultValues: {
-      currency: "NGN",
-      country: "NG",
+      storeName: "",
+      storeUrl: "", 
+      storeDescription: "",
+      storeWhatsappContact: "",
+      storeAddress: "",
     },
   });
 
   const onSubmit = async (data: StorePreferencesSchema) => {
     try {
-      await createStore(data);
-      setStorePreferences(data);
-      setStep(3);
+      setIsUploading(true);
+      const imageUrl = await uploadImage(
+      data.storeLogo
+      , 'store-logos');
+      
+      await createStore({
+        ...data,
+        storeLogo: imageUrl
+      });
+      
       router.push("/new-vendor/product");
     } catch (error) {
       toast("Error", {
         description: "Failed to create store. Please try again.",
       });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -94,7 +89,9 @@ export function StorePreferencesForm() {
               <FormLabel>Store URL</FormLabel>
               <FormControl>
                 <div className="flex items-center space-x-2">
-                  <span className="text-slate-400">whatstore.com/</span>
+                  <span className="text-slate-400">
+{basuUrl}
+                  </span>
                   <Input
                     placeholder="your-store"
                     className="bg-slate-800"
@@ -109,24 +106,36 @@ export function StorePreferencesForm() {
 
         <FormField
           control={form.control}
-          name="currency"
-          render={({ field }) => (
+          name="storeLogo"
+          render={({ field: { onChange, value, ...field } }) => (
             <FormItem>
-              <FormLabel>Currency</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="bg-slate-800">
-                    <SelectValue placeholder="Select a currency" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {CURRENCIES.map((currency) => (
-                    <SelectItem key={currency.value} value={currency.value}>
-                      {currency.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormLabel>Store Logo</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  className="bg-slate-800"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      onChange([file]);
+                      setPreview(URL.createObjectURL(file));
+                    }
+                  }}
+                  {...field}
+                />
+              </FormControl>
+              {preview && (
+                <div className="mt-2">
+                  <Image
+                    src={preview}
+                    alt="Preview"
+                    width={100}
+                    height={100}
+                    className="rounded-lg object-cover"
+                  />
+                </div>
+              )}
               <FormMessage />
             </FormItem>
           )}
@@ -134,42 +143,66 @@ export function StorePreferencesForm() {
 
         <FormField
           control={form.control}
-          name="country"
+          name="storeDescription"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Country</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="bg-slate-800">
-                    <SelectValue placeholder="Select a country" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {COUNTRIES.map((country) => (
-                    <SelectItem key={country.value} value={country.value}>
-                      {country.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormLabel>Store Description</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Tell us about your store..."
+                  className="bg-slate-800 min-h-[120px]"
+                  {...field}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <div className="flex justify-between">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-            className="w-[49%]"
-          >
-            Back
-          </Button>
-          <Button type="submit" className="w-[49%]">
-            Continue to Add Product
-          </Button>
-        </div>
+        <FormField
+          control={form.control}
+          name="storeWhatsappContact"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>WhatsApp Contact</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="+234..."
+                  className="bg-slate-800"
+                  type="tel"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="storeAddress"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Store Address</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Enter your store's address..."
+                  className="bg-slate-800"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button 
+          type="submit" 
+          className="w-full"
+          disabled={isUploading}
+        >
+          {isUploading ? "Creating Store..." : "Create Store"}
+        </Button>
       </form>
     </Form>
   );

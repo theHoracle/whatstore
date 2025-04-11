@@ -1,6 +1,7 @@
 import { FirstProductForm } from "@/features/vendors/onboarding/components/first-product-form";
 
 export default function ProductPage() {
+  // get storeID from URL
   return (
     <div className="text-slate-100 flex flex-col items-center">
       <div className="">
