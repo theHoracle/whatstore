@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createVendor } from "../mutations";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/use-auth";
@@ -10,34 +10,38 @@ import { useAuth } from "@/hooks/use-auth";
 export function VendorInfoForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const { data: user } = useAuth();
+  const { data: user, isLoading: isLoadingAuth } = useAuth();
 
-  useEffect(() => {
-    if (user?.vendor) {
-      router.push("/new-vendor/store");
-    }
-  }, [user, router]);
+  // Don't show anything while checking auth
+  if (isLoadingAuth) {
+    return null;
+  }
+
+  // If user already has a vendor profile, redirect
+  if (user?.vendor) {
+    router.push("/new-vendor/store");
+    return null;
+  }
 
   const onClick = async () => {
+    if (!user) {
+      toast.error("You must be logged in to create a vendor profile");
+      return;
+    }
+
     try {
       setIsLoading(true);
-      console.log("Starting vendor creation...");
       const result = await createVendor();
-      console.log("Vendor creation successful:", result);
-      router.push("/new-vendor/store");
+      if (result) {
+        router.push("/new-vendor/store");
+      }
     } catch (error: any) {
       console.error("Vendor creation error:", error);
-      toast("Error", {
-        description: error.message || "Failed to create vendor profile. Please try again.",
-      });
+      toast.error(error.message || "Failed to create vendor profile");
     } finally {
       setIsLoading(false);
     }
   };
-
-  if (user?.vendor) {
-    return null;
-  }
 
   return (
     <Button 
