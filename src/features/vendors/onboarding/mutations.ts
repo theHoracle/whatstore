@@ -18,21 +18,65 @@ export interface CreateStoreInput {
   storeAddress: string; 
 }
 
-export async function createVendor() {  
-  const res = await apiClient.post('/vendors', {});
+interface ApiResponse<T> {
+  data: T;
+  status: number;
+  message?: string;
+}
 
-  if (res.status !== 201) {
-    console.error('Error creating vendor:', res)
-    throw new Error('Failed to create vendor')
+export async function createVendor() {  
+  try {
+    console.log('Initiating vendor creation...');
+    const res = await apiClient.post<ApiResponse<any>>('/vendors', {});
+
+    if (!res.data) {
+      console.error('Invalid response format from API');
+      throw new Error('Invalid server response');
+    }
+
+    if (res.status !== 201) {
+      console.error('Error creating vendor:', { status: res.status, data: res.data });
+      throw new Error(res.data?.message || 'Failed to create vendor');
+    }
+
+    console.log('Vendor created successfully:', res.data);
+    return res.data;
+  } catch (error) {
+    console.error('Vendor creation failed:', error);
+    if (error instanceof Error) {
+      throw new Error(`Vendor creation failed: ${error.message}`);
+    }
+    throw new Error('An unexpected error occurred during vendor creation');
   }
-  console.log('Vendor created successfully:', res.data)
-  return res.data
 }
 
 export async function createStore(data: CreateStoreInput) {
-  const res = await apiClient.post('/vendors/store', data)
-  if (res.status !== 201) {
-    throw new Error('Failed to create store')
+  try {
+    console.log('Initiating store creation...', { storeName: data.storeName });
+    
+    if (!data.storeName || !data.storeUrl) {
+      throw new Error('Missing required store information');
+    }
+
+    const res = await apiClient.post<ApiResponse<any>>('/vendors/store', data);
+
+    if (!res.data) {
+      console.error('Invalid response format from API');
+      throw new Error('Invalid server response');
+    }
+
+    if (res.status !== 201) {
+      console.error('Error creating store:', { status: res.status, data: res.data });
+      throw new Error(res.data?.message || 'Failed to create store');
+    }
+
+    console.log('Store created successfully:', res.data);
+    return res.data;
+  } catch (error) {
+    console.error('Store creation failed:', error);
+    if (error instanceof Error) {
+      throw new Error(`Store creation failed: ${error.message}`);
+    }
+    throw new Error('An unexpected error occurred during store creation');
   }
-  return res.data
 }
