@@ -11,19 +11,17 @@ const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
         <div className="relative z-10">
           <div className="max-w-4xl mx-auto pt-8 px-4">
+            <div className="backdrop-blur-xl border-purple-500/20 shadow-[0_0_30px_rgba(139,92,246,0.2)]">
             <Progress 
               value={(step / 3) * 100} 
-              className="mb-8 h-2 overflow-hidden bg-black/50 border border-purple-500/20 shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+              className="mb-6 h-2 overflow-hidden bg-black/75 border border-purple-500/20 shadow-[0_0_15px_rgba(139,92,246,0.3)]"
             />
-            <div className="backdrop-blur-xl bg-black/30 rounded-2xl border border-purple-500/20 p-8 shadow-[0_0_30px_rgba(139,92,246,0.2)]">
-              <div className="my-4">
                 {children}
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </div> 
   );
 };
 

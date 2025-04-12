@@ -1,21 +1,25 @@
 import axios, { AxiosResponse } from 'axios';
 import applyCaseMiddleware from 'axios-case-converter';
-import { useAuth } from '@clerk/nextjs';
 
 const baseConfig = {
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  // Use relative URL to hit our Next.js API routes
+  baseURL: '/api',
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  }
 };
 
 const clientApi = applyCaseMiddleware(axios.create(baseConfig));
 
-clientApi.interceptors.request.use(async (config) => {
-  const { getToken } = useAuth();
-  const token = await getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// Remove the token interceptor as it's handled by the proxy
+clientApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error('API error:', error);
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
 export const apiClient = {
   get: <TResponse>(url: string) => 
