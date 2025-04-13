@@ -2,17 +2,16 @@ import { StorePreferencesForm } from "@/features/vendors/onboarding/components/s
 
 export default function StorePage() {
   return (
-    <div className="text-slate-100 flex flex-col items-center">
-      <div className="">
-        <h1 className="text-7xl capitalize leading-tight tracking-tight font-extrabold text-center text-wrap">
+    <div className="text-slate-100 container relative mx-auto px-4">
+      <div className="max-w-[820px] mx-auto mb-12">
+        <h1 className="text-4xl md:text-6xl lg:text-7xl capitalize leading-tight tracking-tight font-extrabold text-center">
           Setup your store
         </h1>
-        <div className="size-full py-8">
-        
-            <StorePreferencesForm />
-        
-        </div>
+        <p className="mt-4 text-lg text-center text-slate-400 max-w-2xl mx-auto">
+          Create your online store presence with a unique identity and essential details
+        </p>
       </div>
+      <StorePreferencesForm />
     </div>
   );
 }
