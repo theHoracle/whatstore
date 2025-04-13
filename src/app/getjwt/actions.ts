@@ -7,7 +7,3 @@ export const getToken = async () => {
     console.log('token', token);
     return token; 
 }
-
-
-
-// TODO: TO BE REMOVED

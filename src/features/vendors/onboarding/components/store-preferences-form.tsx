@@ -21,7 +21,7 @@ import { createStore } from "../mutations";
 import { useRef, useState } from "react";
 import { uploadImage } from "@/utils/upload";
 import Image from "next/image";
-import { ImageIcon, Store } from "lucide-react";
+import { ImageIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const basuUrl = process.env.NEXT_PUBLIC_BASE_URL || "whatstore.com/store/";
@@ -78,7 +78,7 @@ export function StorePreferencesForm() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-lg font-medium text-slate-200">Store Branding</h2>
-                <p className="text-sm text-slate-400 mt-1">Add your store's logo and unique URL</p>
+                <p className="text-sm text-slate-400 mt-1">Add your {"store's"} logo and unique URL</p>
               </div>
 
               <FormField
@@ -165,7 +165,7 @@ export function StorePreferencesForm() {
                       </div>
                     </FormControl>
                     <FormDescription>
-                      This will be your store's unique web address
+                      This will be your {"store's"} unique web address
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

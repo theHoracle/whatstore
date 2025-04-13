@@ -37,7 +37,7 @@ export const storePreferencesSchema = z.object({
   ),
   storeDescription: z.string().min(20),
   storeWhatsappContact: z.string(),
-  storeAddress: z.string().min(3), 
+  storeAddress: z.string().min(5), 
 });
 
 export const firstProductSchema = z.object({
