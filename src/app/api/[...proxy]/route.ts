@@ -56,3 +56,13 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   return makeRequestWithRetry(request, 'POST');
 }
+
+export async function PUT(request: NextRequest) {
+  return makeRequestWithRetry(request, 'PUT');
+}
+export async function DELETE(request: NextRequest) {  
+  return makeRequestWithRetry(request, 'DELETE');
+}
+export async function PATCH(request: NextRequest) {
+  return makeRequestWithRetry(request, 'PATCH');
+}

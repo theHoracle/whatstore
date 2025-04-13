@@ -18,19 +18,45 @@ import { useRouter } from "next/navigation";
 import { storePreferencesSchema, type StorePreferencesSchema } from "../schema";
 import { toast } from "sonner";
 import { createStore } from "../mutations";
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback } from "react";
 import { uploadImage } from "@/utils/upload";
 import Image from "next/image";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, CheckCircle2, XCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import debounce from "lodash/debounce";
 
-const basuUrl = process.env.NEXT_PUBLIC_BASE_URL || "whatstore.com/store/";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "whatstore.com/store/";
 
 export function StorePreferencesForm() {
   const router = useRouter();
   const [preview, setPreview] = useState<string>();
   const [isUploading, setIsUploading] = useState(false);
+  const [isCheckingUrl, setIsCheckingUrl] = useState(false);
+  const [isUrlAvailable, setIsUrlAvailable] = useState<boolean | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Create a debounced function to check URL availability
+  const checkUrlAvailability = useCallback(
+    debounce(async (url: string) => {
+      if (!url) {
+        setIsUrlAvailable(null);
+        return;
+      }
+
+      setIsCheckingUrl(true);
+      try {
+        const response = await fetch(`/api/stores/check-url?url=${url}`);
+        const data = await response.json();
+        setIsUrlAvailable(data.available);
+      } catch (error) {
+        console.error('Error checking URL availability:', error);
+        setIsUrlAvailable(null);
+      } finally {
+        setIsCheckingUrl(false);
+      }
+    }, 500),
+    []
+  );
 
   const form = useForm<StorePreferencesSchema>({
     resolver: zodResolver(storePreferencesSchema),
@@ -44,6 +70,12 @@ export function StorePreferencesForm() {
   });
 
   const onSubmit = async (data: StorePreferencesSchema) => {
+    // Prevent submission if URL is not available
+    if (!isUrlAvailable) {
+      toast.error("Please choose a different store URL");
+      return;
+    }
+
     try {
       setIsUploading(true);
       const imageUrl = await uploadImage(data.storeLogo, "store-logos");
@@ -55,9 +87,7 @@ export function StorePreferencesForm() {
 
       router.push("/new-vendor/product");
     } catch (error) {
-      toast("Error", {
-        description: "Failed to create store. Please try again.",
-      });
+      toast.error("Failed to create store. Please try again.");
     } finally {
       setIsUploading(false);
     }
@@ -156,16 +186,39 @@ export function StorePreferencesForm() {
                     <FormLabel>Store URL</FormLabel>
                     <FormControl>
                       <div className="flex items-center space-x-1 bg-slate-800/50 backdrop-blur-sm rounded-md border border-slate-700/50 px-3 py-2 hover:border-cyan-400 transition-colors">
-                        <span className="text-slate-400 select-none shrink-0">{basuUrl}</span>
+                        <span className="text-slate-400 select-none shrink-0">{baseUrl}</span>
                         <Input
                           placeholder="store-name"
                           className="!bg-transparent text-xl ring-0 border-0 focus:ring-0 active:ring-0 outline-0 p-0"
                           {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            checkUrlAvailability(e.target.value);
+                          }}
                         />
+                        <div className="shrink-0 w-6">
+                          {isCheckingUrl && (
+                            <div className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+                          )}
+                          {!isCheckingUrl && isUrlAvailable === true && (
+                            <CheckCircle2 className="w-5 h-5 text-green-500" />
+                          )}
+                          {!isCheckingUrl && isUrlAvailable === false && (
+                            <XCircle className="w-5 h-5 text-red-500" />
+                          )}
+                        </div>
                       </div>
                     </FormControl>
-                    <FormDescription>
-                      This will be your {"store's"} unique web address
+                    <FormDescription className="flex items-center gap-1">
+                      {isUrlAvailable === false && (
+                        <span className="text-red-400">This URL is already taken. Please choose another one.</span>
+                      )}
+                      {isUrlAvailable === true && (
+                        <span className="text-green-400">This URL is available!</span>
+                      )}
+                      {isUrlAvailable === null && (
+                        "This will be your store's unique web address"
+                      )}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
