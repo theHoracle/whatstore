@@ -24,6 +24,8 @@ import Image from "next/image";
 import { ImageIcon, CheckCircle2, XCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import debounce from "lodash/debounce";
+import clientApi from "@/lib/api/client";
+import { AxiosError } from "axios";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "whatstore.com/store/";
 
@@ -45,10 +47,14 @@ export function StorePreferencesForm() {
 
       setIsCheckingUrl(true);
       try {
-        const response = await fetch(`/api/stores/check-url?url=${url}`);
-        const data = await response.json();
-        setIsUrlAvailable(data.available);
+        const res = await clientApi.get<{available: number}>(`/api/stores/check-url?url=${url}`);
+        
+        // Backend returns 0 for available
+        setIsUrlAvailable(res.data.available === 0);
       } catch (error) {
+        if(error instanceof AxiosError) {
+          toast.error(error.message)
+        }
         console.error('Error checking URL availability:', error);
         setIsUrlAvailable(null);
       } finally {
@@ -185,7 +191,7 @@ export function StorePreferencesForm() {
                   <FormItem>
                     <FormLabel>Store URL</FormLabel>
                     <FormControl>
-                      <div className="flex items-center space-x-1 bg-slate-800/50 backdrop-blur-sm rounded-md border border-slate-700/50 px-3 py-2 hover:border-cyan-400 transition-colors">
+                      <div className="flex items-center space-x-1 bg-slate-800/50 backdrop-blur-sm rounded-md border border-slate-700/50 px-2 py-1 hover:border-cyan-400 transition-colors">
                         <span className="text-slate-400 select-none shrink-0">{baseUrl}</span>
                         <Input
                           placeholder="store-name"

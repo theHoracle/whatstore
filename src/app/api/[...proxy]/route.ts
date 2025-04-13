@@ -10,10 +10,13 @@ async function makeRequestWithRetry(request: NextRequest, method: string) {
     const token = await getToken();
 
     const path = request.nextUrl.pathname.replace('/api/', '');
-    console.log('API path:', path, "\nTOken:", token);
+    const searchParams = request.nextUrl.search; // Get the search params
+    const fullUrl = `${API_BASE_URL}/${path}${searchParams}`;
+    console.log('API path:', path, 'Search params:', searchParams, "\nToken:", token);
+    console.log('Full URL being sent to backend:', fullUrl);
     const body = method === 'POST' ? await request.json() : undefined;
 
-    const response = await fetch(`${API_BASE_URL}/${path}`, {
+    const response = await fetch(fullUrl, {
       method,
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -24,10 +27,14 @@ async function makeRequestWithRetry(request: NextRequest, method: string) {
       signal: AbortSignal.timeout(10000), // 10 second timeout
     });
 
+    console.log('Backend response status:', response.status);
+    const responseData = await response.clone().json();
+    console.log('Backend response data:', responseData);
+
     if (response.status === 401) {
       // Token expired, get a new token and retry once
       const newToken = await getToken();
-      const retryResponse = await fetch(`${API_BASE_URL}/${path}`, {
+      const retryResponse = await fetch(fullUrl, {
         method,
         headers: {
           'Authorization': `Bearer ${newToken}`,
