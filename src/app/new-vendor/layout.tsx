@@ -22,7 +22,7 @@ const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="relative h-lvh">
-      <div className="bg-gradient-to-b from-black via-purple-900/20 to-cyan-900/30 absolute inset-0">
+      <div className="bg-gradient-to-b from-black absolute inset-0">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
         <div className="relative z-10">
           <div className="max-w-4xl mx-auto p-1 md:p-4">

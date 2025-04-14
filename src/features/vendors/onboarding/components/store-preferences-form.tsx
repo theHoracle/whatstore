@@ -47,10 +47,10 @@ export function StorePreferencesForm() {
 
       setIsCheckingUrl(true);
       try {
-        const res = await clientApi.get<{available: number}>(`/api/stores/check-url?url=${url}`);
+        const res = await clientApi.get<{ available: boolean }>(`/stores/check-url?url=${url}`);
         
         // Backend returns 0 for available
-        setIsUrlAvailable(res.data.available === 0);
+        setIsUrlAvailable(res.data.available);
       } catch (error) {
         if(error instanceof AxiosError) {
           toast.error(error.message)
