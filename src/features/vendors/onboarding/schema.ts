@@ -24,17 +24,19 @@ export const vendorInfoSchema = z.object({
 export const storePreferencesSchema = z.object({
   storeName: z.string().min(3),
   storeUrl: z.string().min(3),
-  storeLogo: z.any().refine(
-    (file) => file instanceof File,
-    "Invalid file type"
-  ).refine(
-    (file: File) => file.size <= MAX_FILE_SIZE,
-    "Max image size is 5MB"
-  ).refine(
-    (file: File) =>
-      ACCEPTED_IMAGE_TYPES.includes(file.type),
-    "Only .jpg, .jpeg, .png and .webp formats are supported"
-  ),
+  storeLogo: z.array(z.any())
+    .length(1, "Please select exactly one image")
+    .transform(files => files[0])
+    .refine(
+      (file) => file instanceof File,
+      "Invalid file type"
+    ).refine(
+      (file: File) => file.size <= MAX_FILE_SIZE,
+      "Max image size is 5MB"
+    ).refine(
+      (file: File) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported"
+    ),
   storeDescription: z.string().min(20),
   storeWhatsappContact: z.string(),
   storeAddress: z.string().min(5), 

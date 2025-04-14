@@ -105,6 +105,14 @@ export function StorePreferencesForm() {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Use Command+I (Mac) or Control+I (Windows/Linux) to open file browser
+    if ((e.metaKey || e.ctrlKey) && e.key === 'i') {
+      e.preventDefault();
+      handleImageClick();
+    }
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -128,11 +136,7 @@ export function StorePreferencesForm() {
                           role="button"
                           tabIndex={0}
                           onClick={handleImageClick}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              handleImageClick();
-                            }
-                          }}
+                          onKeyDown={handleKeyDown}
                           className="relative aspect-square w-full max-w-[320px] mx-auto cursor-pointer overflow-hidden rounded-2xl border-2 border-dashed border-slate-700/50 hover:border-cyan-400 transition-all duration-300 bg-gradient-to-br from-slate-800/50 to-slate-900/50"
                         >
                           {preview ? (
