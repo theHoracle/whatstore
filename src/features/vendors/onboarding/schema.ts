@@ -37,70 +37,76 @@ export const storePreferencesSchema = z.object({
   storeAddress: z.string().min(5), 
 });
 
+// Form schemas for product and service
+const productSchema = z.object({
+  type: z.literal("product"),
+  name: z.string().min(3, {
+    message: "Product name must be at least 3 characters",
+  }),
+  description: z.string().min(20, {
+    message: "Description should be at least 20 characters",
+  }),
+  price: z.number().min(0, {
+    message: "Price must be a positive number",
+  }),
+  currency: z.string().default("NGN"),
+  stock: z.number().min(0, {
+    message: "Stock must be a positive number",
+  }),
+  category: z.string().min(1, {
+    message: "Please select a category",
+  }),
+  images: z
+    .custom<File[]>()
+    .refine((files) => files?.length >= 1, "At least one image is required")
+    .refine(
+      (files) => files?.every((file) => file instanceof File),
+      "Invalid file type"
+    )
+    .refine(
+      (files) => files?.every((file) => file.size <= MAX_FILE_SIZE),
+      "Max image size is 5MB"
+    )
+    .refine(
+      (files) =>
+        files?.every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type)),
+      "Only .jpg, .jpeg, .png and .webp formats are supported"
+    ),
+});
+
+const serviceSchema = z.object({
+  type: z.literal("service"),
+  name: z.string().min(3, {
+    message: "Service name must be at least 3 characters",
+  }),
+  description: z.string().min(20, {
+    message: "Description should be at least 20 characters",
+  }),
+  rate: z.number().min(0, {
+    message: "Rate must be a positive number",
+  }),
+  currency: z.string().default("NGN"),
+  image: z
+    .custom<File>()
+    .refine((file) => file instanceof File, "Invalid file type")
+    .refine(
+      (file) => file.size <= MAX_FILE_SIZE,
+      "Max image size is 5MB"
+    )
+    .refine(
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported"
+    ),
+});
+
 export const firstProductSchema = z.discriminatedUnion("type", [
-  z.object({
-    type: z.literal("product"),
-    name: z.string().min(3, {
-      message: "Product name must be at least 3 characters",
-    }),
-    description: z.string().min(20, {
-      message: "Description should be at least 20 characters",
-    }),
-    price: z.number().min(0, {
-      message: "Price must be a positive number",
-    }),
-    currency: z.string().default("NGN"),
-    stock: z.number().min(0, {
-      message: "Stock must be a positive number",
-    }),
-    category: z.string().min(1, {
-      message: "Please select a category",
-    }),
-    images: z
-      .array(z.any())
-      .min(1, "At least one image is required")
-      .refine(
-        (files) => files.every((file) => file instanceof File),
-        "Invalid file type"
-      )
-      .refine(
-        (files) => files.every((file: File) => file.size <= MAX_FILE_SIZE),
-        "Max image size is 5MB"
-      )
-      .refine(
-        (files) =>
-          files.every((file: File) => ACCEPTED_IMAGE_TYPES.includes(file.type)),
-        "Only .jpg, .jpeg, .png and .webp formats are supported"
-      ),
-  }),
-  z.object({
-    type: z.literal("service"),
-    name: z.string().min(3, {
-      message: "Service name must be at least 3 characters",
-    }),
-    description: z.string().min(20, {
-      message: "Description should be at least 20 characters",
-    }),
-    rate: z.number().min(0, {
-      message: "Rate must be a positive number",
-    }),
-    currency: z.string().default("NGN"),
-    image: z.array(z.any())
-      .length(1, "Please select exactly one image")
-      .transform(files => files[0])
-      .refine(
-        (file) => file instanceof File,
-        "Invalid file type"
-      ).refine(
-        (file: File) => file.size <= MAX_FILE_SIZE,
-        "Max image size is 5MB"
-      ).refine(
-        (file: File) => ACCEPTED_IMAGE_TYPES.includes(file.type),
-        "Only .jpg, .jpeg, .png and .webp formats are supported"
-      ),
-  }),
+  productSchema,
+  serviceSchema,
 ]);
 
+export type FirstProductSchema = z.infer<typeof firstProductSchema>;
+
+// API response types
 export interface Product {
   id: number;
   storeId: number;
@@ -127,4 +133,3 @@ export interface Service {
 
 export type VendorInfoSchema = z.infer<typeof vendorInfoSchema>;
 export type StorePreferencesSchema = z.infer<typeof storePreferencesSchema>;
-export type FirstProductSchema = z.infer<typeof firstProductSchema>;

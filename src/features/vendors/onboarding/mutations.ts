@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api";
-import { StorePreferencesSchema, FirstProductSchema } from "./schema";
+import { FirstProductSchema } from "./schema";
 import clientApi from "@/lib/api/client";
 
 export interface CreateVendorInput {
@@ -29,6 +29,28 @@ interface StoreResponse {
   id: number;
   // ... other store fields
 }
+
+// Helper type for product data after image upload
+type ProductData = {
+  name: string;
+  description: string;
+  price: number;
+  currency: string;
+  stock: number;
+  category: string;
+  images: string[]; // URLs from Supabase storage
+  storeId: number;
+};
+
+// Helper type for service data after image upload  
+type ServiceData = {
+  name: string;
+  description: string;
+  rate: number;
+  currency: string;
+  image: string; // URL from Supabase storage
+  storeId: number;
+};
 
 export async function createVendor() {  
   try {
@@ -68,32 +90,18 @@ export const createStore = async (data: CreateStoreInput) => {
   return res.data;
 };
 
-export const createProduct = async (storeId: number, data: Extract<FirstProductSchema, { type: "product" }>) => {
-  const formData = new FormData();
-  data.images.forEach((image) => {
-    formData.append("images", image);
+export const createProduct = async (storeId: number, data: ProductData) => {
+  const res = await clientApi.post(`/stores/${storeId}/products`, {
+    ...data,
+    storeId
   });
-  formData.append("name", data.name);
-  formData.append("description", data.description);
-  formData.append("price", data.price.toString());
-  formData.append("currency", data.currency);
-  formData.append("stock", data.stock.toString());
-  formData.append("category", data.category);
-  formData.append("storeId", storeId.toString());
-
-  const res = await clientApi.post(`/stores/${storeId}/products`, formData);
   return res.data;
 };
 
-export const createService = async (storeId: number, data: Extract<FirstProductSchema, { type: "service" }>) => {
-  const formData = new FormData();
-  formData.append("image", data.image);
-  formData.append("name", data.name);
-  formData.append("description", data.description);
-  formData.append("rate", data.rate.toString());
-  formData.append("currency", data.currency);
-  formData.append("storeId", storeId.toString());
-
-  const res = await clientApi.post(`/stores/${storeId}/services`, formData);
+export const createService = async (storeId: number, data: ServiceData) => {
+  const res = await clientApi.post(`/stores/${storeId}/services`, {
+    ...data,
+    storeId
+  });
   return res.data;
 };

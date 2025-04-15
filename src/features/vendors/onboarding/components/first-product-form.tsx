@@ -55,7 +55,7 @@ export function FirstProductForm() {
       price: 0,
       stock: 0,
       currency: "NGN",
-      category: "",
+      category: ""
     },
   });
 
@@ -71,15 +71,36 @@ export function FirstProductForm() {
       }
 
       if (data.type === "product") {
-        // Create product with original image files
-        await createProduct(storeId, data);
+        // Upload product images first
+        const imageUrls = await uploadImages(data.images, "product-images");
+        // Create product with uploaded URLs
+        await createProduct(storeId, {
+          name: data.name,
+          description: data.description,
+          price: data.price,
+          currency: data.currency,
+          stock: data.stock,
+          category: data.category,
+          images: imageUrls, 
+          storeId
+        });
       } else {
-        // Create service with original image file
-        await createService(storeId, data);
+        // Upload single service image
+        const [imageUrl] = await uploadImages([data.image], "service-images");
+        // Create service with uploaded URL
+        await createService(storeId, {
+          name: data.name,
+          description: data.description,
+          rate: data.rate,
+          currency: data.currency,
+          image: imageUrl, 
+          storeId
+        });
       }
       
       router.push("/dashboard");
     } catch (error) {
+      console.error('Error creating product/service:', error);
       toast.error("Failed to create. Please try again.");
     } finally {
       setIsUploading(false);
