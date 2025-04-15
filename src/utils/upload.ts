@@ -1,6 +1,6 @@
 import supabase from "@/utils/supabase/server"
 
-const bucketName = process.env.SUPABASE_BUCKET_NAME as string
+const bucketName = process.env.SUPABASE_BUCKET_NAME as string || "whatstore-images"
 
 export async function uploadImage(file: File, path: string) {
   const { data, error } = await supabase.storage

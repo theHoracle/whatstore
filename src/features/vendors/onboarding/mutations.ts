@@ -1,5 +1,6 @@
 import { apiClient } from "@/lib/api";
-
+import { StorePreferencesSchema, FirstProductSchema } from "./schema";
+import clientApi from "@/lib/api/client";
 
 export interface CreateVendorInput {
   name: string;
@@ -11,17 +12,22 @@ export interface CreateVendorInput {
 
 export interface CreateStoreInput {
   storeName: string;
-  storeLogo: string;
+  storeLogo: string; // Changed from File to string since we're sending the URL
   storeUrl: string;
   storeDescription: string;
   storeWhatsappContact: string;
-  storeAddress: string; 
+  storeAddress: string;
 }
 
 interface ApiResponse<T> {
   data: T;
   status: number;
   message?: string;
+}
+
+interface StoreResponse {
+  id: number;
+  // ... other store fields
 }
 
 export async function createVendor() {  
@@ -50,33 +56,44 @@ export async function createVendor() {
   }
 }
 
-export async function createStore(data: CreateStoreInput) {
-  try {
-    console.log('Initiating store creation...', { storeName: data.storeName });
-    
-    if (!data.storeName || !data.storeUrl) {
-      throw new Error('Missing required store information');
-    }
+export const createStore = async (data: CreateStoreInput) => {
+  const res = await clientApi.post<StoreResponse>("/stores", {
+    storeName: data.storeName,
+    storeLogo: data.storeLogo,
+    storeUrl: data.storeUrl,
+    storeDescription: data.storeDescription,
+    storeWhatsappContact: data.storeWhatsappContact,
+    storeAddress: data.storeAddress
+  });
+  return res.data;
+};
 
-    const res = await apiClient.post<ApiResponse<any>>('/vendors/store', data);
+export const createProduct = async (storeId: number, data: Extract<FirstProductSchema, { type: "product" }>) => {
+  const formData = new FormData();
+  data.images.forEach((image) => {
+    formData.append("images", image);
+  });
+  formData.append("name", data.name);
+  formData.append("description", data.description);
+  formData.append("price", data.price.toString());
+  formData.append("currency", data.currency);
+  formData.append("stock", data.stock.toString());
+  formData.append("category", data.category);
+  formData.append("storeId", storeId.toString());
 
-    if (!res.data) {
-      console.error('Invalid response format from API');
-      throw new Error('Invalid server response');
-    }
+  const res = await clientApi.post(`/stores/${storeId}/products`, formData);
+  return res.data;
+};
 
-    if (res.status !== 201) {
-      console.error('Error creating store:', { status: res.status, data: res.data });
-      throw new Error(res.data?.message || 'Failed to create store');
-    }
+export const createService = async (storeId: number, data: Extract<FirstProductSchema, { type: "service" }>) => {
+  const formData = new FormData();
+  formData.append("image", data.image);
+  formData.append("name", data.name);
+  formData.append("description", data.description);
+  formData.append("rate", data.rate.toString());
+  formData.append("currency", data.currency);
+  formData.append("storeId", storeId.toString());
 
-    console.log('Store created successfully:', res.data);
-    return res.data;
-  } catch (error) {
-    console.error('Store creation failed:', error);
-    if (error instanceof Error) {
-      throw new Error(`Store creation failed: ${error.message}`);
-    }
-    throw new Error('An unexpected error occurred during store creation');
-  }
-}
+  const res = await clientApi.post(`/stores/${storeId}/services`, formData);
+  return res.data;
+};

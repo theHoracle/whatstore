@@ -26,6 +26,8 @@ import { Card } from "@/components/ui/card";
 import debounce from "lodash/debounce";
 import clientApi from "@/lib/api/client";
 import { AxiosError } from "axios";
+import { useOnboardingStore } from "../store";
+
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "whatstore.com/store/";
 
@@ -36,6 +38,7 @@ export function StorePreferencesForm() {
   const [isCheckingUrl, setIsCheckingUrl] = useState(false);
   const [isUrlAvailable, setIsUrlAvailable] = useState<boolean | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { setStoreId } = useOnboardingStore();
 
   // Create a debounced function to check URL availability
   const checkUrlAvailability = useCallback(
@@ -48,8 +51,6 @@ export function StorePreferencesForm() {
       setIsCheckingUrl(true);
       try {
         const res = await clientApi.get<{ available: boolean }>(`/stores/check-url?url=${url}`);
-        
-        // Backend returns 0 for available
         setIsUrlAvailable(res.data.available);
       } catch (error) {
         if(error instanceof AxiosError) {
@@ -76,7 +77,6 @@ export function StorePreferencesForm() {
   });
 
   const onSubmit = async (data: StorePreferencesSchema) => {
-    // Prevent submission if URL is not available
     if (!isUrlAvailable) {
       toast.error("Please choose a different store URL");
       return;
@@ -84,13 +84,17 @@ export function StorePreferencesForm() {
 
     try {
       setIsUploading(true);
-      const imageUrl = await uploadImage(data.storeLogo, "store-logos");
+      // Upload the logo to Supabase and get the URL
+      const storeLogo = data.storeLogo;
+      const logoUrl = await uploadImage(storeLogo, "store-logos");
 
-      await createStore({
+      // Create the store with the logo URL
+      const storeData = await createStore({
         ...data,
-        storeLogo: imageUrl,
+        storeLogo: logoUrl,
       });
 
+      setStoreId(storeData.id);
       router.push("/new-vendor/product");
     } catch (error) {
       toast.error("Failed to create store. Please try again.");

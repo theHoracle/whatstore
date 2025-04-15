@@ -8,169 +8,542 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { useState } from "react";
 import { firstProductSchema, type FirstProductSchema } from "../schema";
-import { useOnboardingStore } from "../store";
 import { toast } from "sonner";
-import { createVendor } from "../mutations";
+import { createProduct, createService } from "../mutations";
+import { useRef, useState } from "react";
 import { uploadImages } from "@/utils/upload";
+import Image from "next/image";
+import { ImageIcon } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { useOnboardingStore } from "../store";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+
+const TEMP_CATEGORIES = [
+  "Electronics",
+  "Fashion",
+  "Home & Garden",
+  "Health & Beauty",
+  "Sports",
+  "Other",
+];
 
 export function FirstProductForm() {
   const [previews, setPreviews] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const { setFirstProduct, setIsUploading, vendorInfo, storePreferences } = useOnboardingStore();
+  const { setFirstProduct, setIsUploading, storeId } = useOnboardingStore();
 
   const form = useForm<FirstProductSchema>({
     resolver: zodResolver(firstProductSchema),
     defaultValues: {
+      type: "product",
       price: 0,
-      images: [],
+      stock: 0,
+      currency: "NGN",
+      category: "",
     },
   });
 
-  // Redirect if previous steps are not completed
-  if (!vendorInfo.name || !storePreferences.storeName) {
-    router.push("/new-vendor");
-    return null;
-  }
-
+  const type = form.watch("type");
 
   const onSubmit = async (data: FirstProductSchema) => {
     try {
       setIsUploading(true);
-      // Upload images and get URLs
-      const imageUrls = await uploadImages(data.images, 'product-images') 
+      
+      if (!storeId) {
+        toast.error("Store ID not found. Please try again.");
+        return;
+      }
+
+      if (data.type === "product") {
+        // Create product with original image files
+        await createProduct(storeId, data);
+      } else {
+        // Create service with original image file
+        await createService(storeId, data);
+      }
       
       router.push("/dashboard");
     } catch (error) {
-      toast("Error", {
-        description: "Something went wrong. Please try again.",
-      });
+      toast.error("Failed to create. Please try again.");
     } finally {
       setIsUploading(false);
     }
   };
 
+  const handleImageClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Product Name</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Enter product name"
-                  className="bg-slate-800"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="relative max-h-[calc(100vh-8rem)] overflow-y-auto space-y-8">
+        <Tabs 
+          value={type}
+          defaultValue="product"
+          className="w-full"
+          onValueChange={(value) => form.setValue("type", value as "product" | "service")}
+        >
+          <TabsList className="grid w-full grid-cols-2 bg-slate-800/50 p-1 rounded-lg">
+            <TabsTrigger value="product">
+              Product
+            </TabsTrigger>
+            <TabsTrigger value="service">
+              Service
+            </TabsTrigger>
+          </TabsList>
 
-        <FormField
-          control={form.control}
-          name="price"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Price</FormLabel>
-              <FormControl>
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  className="bg-slate-800"
-                  {...field}
-                  onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <TabsContent value="product" className="mt-6">
+            <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Image Upload Column */}
+              <Card className="lg:sticky lg:top-8 h-fit p-6 bg-slate-900/50 border-slate-800/50 backdrop-blur-sm">
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-lg font-medium text-slate-200">
+                      Product Images
+                    </h2>
+                    <p className="text-sm text-slate-400 mt-1">
+                      Upload one or more images of your product
+                    </p>
+                  </div>
 
-        <FormField
-          control={form.control}
-          name="images"
-          render={({ field: { onChange, ...field } }) => (
-            <FormItem>
-              <FormLabel>Product Images</FormLabel>
-              <FormControl>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="bg-slate-800"
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files || []);
-                    onChange(files);
-                    setPreviews(
-                      files.map((file) => URL.createObjectURL(file))
-                    );
-                  }}
-                />
-              </FormControl>
-              {previews.length > 0 && (
-                <div className="mt-2 flex gap-2 flex-wrap">
-                  {previews.map((preview, index) => (
-                    <Image
-                      key={index}
-                      src={preview}
-                      alt={`Preview ${index + 1}`}
-                      width={100}
-                      height={100}
-                      className="rounded-lg object-cover"
-                    />
-                  ))}
+                  <FormField
+                    control={form.control}
+                    name="images"
+                    render={({ field: { onChange, value, ...field } }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="group grid grid-cols-1 gap-4">
+                            <div className="grid grid-cols-2 gap-4">
+                              {Array.from({ length: 4 }).map((_, index) => (
+                                <div
+                                  key={index}
+                                  role="button"
+                                  tabIndex={0}
+                                  onClick={handleImageClick}
+                                  className="relative aspect-square cursor-pointer overflow-hidden rounded-xl border-2 border-dashed border-slate-700/50 hover:border-cyan-400 transition-all duration-300 bg-gradient-to-br from-slate-800/50 to-slate-900/50"
+                                >
+                                  {previews[index] ? (
+                                    <Image
+                                      src={previews[index]}
+                                      alt={`Product Image ${index + 1}`}
+                                      fill
+                                      className="object-cover"
+                                    />
+                                  ) : (
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                                      <ImageIcon className="w-6 h-6 text-cyan-400" />
+                                      <span className="text-xs text-slate-400">
+                                        Add Image
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              multiple
+                              className="hidden"
+                              ref={fileInputRef}
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                onChange(files);
+                                setPreviews(
+                                  files.map((file) => URL.createObjectURL(file))
+                                );
+                              }}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormDescription className="text-center text-xs text-slate-500 mt-3">
+                          Add up to 4 images. PNG, JPG up to 5MB each.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              </Card>
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Describe your product..."
-                  className="bg-slate-800 min-h-[120px]"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              {/* Details Column */}
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-lg font-medium text-slate-200">
+                    Product Details
+                  </h2>
+                  <p className="text-sm text-slate-400 mt-1">
+                    Provide information about your product
+                  </p>
+                </div>
 
-        <div className="flex justify-between">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-            className="w-[49%]"
-          >
-            Back
-          </Button>
-          <Button type="submit" className="w-[49%]">
-            Complete Setup
-          </Button>
-        </div>
+                <Card className="space-y-6 p-6 bg-slate-900/50 border-slate-800/50 backdrop-blur-sm">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Product Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter product name"
+                            className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 hover:border-cyan-400 focus:border-purple-600 transition-colors"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Describe your product..."
+                            className="bg-slate-800/50 backdrop-blur-sm min-h-[160px] border-slate-700/50 hover:border-cyan-400 focus:border-purple-600 transition-colors resize-none"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Include key features and specifications
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Price</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="0.00"
+                              className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 hover:border-cyan-400 focus:border-purple-600 transition-colors"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(parseFloat(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="currency"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Currency</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 hover:border-cyan-400 focus:border-purple-600 transition-colors">
+                                <SelectValue placeholder="Select currency" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="NGN">NGN</SelectItem>
+                              <SelectItem value="USD">USD</SelectItem>
+                              <SelectItem value="EUR">EUR</SelectItem>
+                              <SelectItem value="GBP">GBP</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="stock"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Stock</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="0"
+                            className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 hover:border-cyan-400 focus:border-purple-600 transition-colors"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(parseInt(e.target.value))
+                            }
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          How many items do you have in stock?
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 hover:border-cyan-400 focus:border-purple-600 transition-colors">
+                              <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {TEMP_CATEGORIES.map((category) => (
+                              <SelectItem key={category} value={category.toLowerCase()}>
+                                {category}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </Card>
+
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-cyan-400 to-purple-600 hover:from-cyan-500 hover:to-purple-700 text-white font-medium h-12 rounded-lg shadow-lg hover:shadow-cyan-400/20 transition-all duration-300"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting ? (
+                    <span className="flex items-center justify-center space-x-2">
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Creating...</span>
+                    </span>
+                  ) : (
+                    "Create Product"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="service" className="mt-6">
+            <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Image Upload Column */}
+              <Card className="lg:sticky lg:top-8 h-fit p-6 bg-slate-900/50 border-slate-800/50 backdrop-blur-sm">
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-lg font-medium text-slate-200">
+                      Service Image
+                    </h2>
+                    <p className="text-sm text-slate-400 mt-1">
+                      Upload an image representing your service
+                    </p>
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="image"
+                    render={({ field: { onChange, value, ...field } }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="group grid grid-cols-1 gap-4">
+                            <div
+                              role="button"
+                              tabIndex={0}
+                              onClick={handleImageClick}
+                              className="relative aspect-video cursor-pointer overflow-hidden rounded-xl border-2 border-dashed border-slate-700/50 hover:border-cyan-400 transition-all duration-300 bg-gradient-to-br from-slate-800/50 to-slate-900/50"
+                            >
+                              {previews[0] ? (
+                                <Image
+                                  src={previews[0]}
+                                  alt="Service Image"
+                                  fill
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                                  <ImageIcon className="w-8 h-8 text-cyan-400" />
+                                  <span className="text-sm text-slate-400">
+                                    Upload Service Image
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              ref={fileInputRef}
+                              onChange={(e) => {
+                                const files = Array.from(e.target.files || []);
+                                onChange([files[0]]);
+                                setPreviews([URL.createObjectURL(files[0])]);
+                              }}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormDescription className="text-center text-xs text-slate-500 mt-3">
+                          Add a cover image for your service. PNG, JPG up to 5MB.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </Card>
+
+              {/* Details Column */}
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-lg font-medium text-slate-200">
+                    Service Details
+                  </h2>
+                  <p className="text-sm text-slate-400 mt-1">
+                    Describe your service offering
+                  </p>
+                </div>
+
+                <Card className="space-y-6 p-6 bg-slate-900/50 border-slate-800/50 backdrop-blur-sm">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Service Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter service name"
+                            className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 hover:border-cyan-400 focus:border-purple-600 transition-colors"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Describe your service..."
+                            className="bg-slate-800/50 backdrop-blur-sm min-h-[160px] border-slate-700/50 hover:border-cyan-400 focus:border-purple-600 transition-colors resize-none"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Explain what your service includes
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="rate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Rate</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="0.00"
+                              className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 hover:border-cyan-400 focus:border-purple-600 transition-colors"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(parseFloat(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="currency"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Currency</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50 hover:border-cyan-400 focus:border-purple-600 transition-colors">
+                                <SelectValue placeholder="Select currency" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="NGN">NGN</SelectItem>
+                              <SelectItem value="USD">USD</SelectItem>
+                              <SelectItem value="EUR">EUR</SelectItem>
+                              <SelectItem value="GBP">GBP</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </Card>
+
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-cyan-400 to-purple-600 hover:from-cyan-500 hover:to-purple-700 text-white font-medium h-12 rounded-lg shadow-lg hover:shadow-cyan-400/20 transition-all duration-300"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting ? (
+                    <span className="flex items-center justify-center space-x-2">
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>Creating...</span>
+                    </span>
+                  ) : (
+                    "Create Service"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </form>
     </Form>
   );

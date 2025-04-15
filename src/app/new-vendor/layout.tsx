@@ -46,7 +46,7 @@ const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
                   </div>
                 </div>
               </div>
-              <div className="p-1 md:p-6 lg:p-8">
+              <div className="relative p-1 md:p-6 lg:p-8">
                 {children}
               </div>
             </div>

@@ -4,6 +4,7 @@ import { VendorInfoSchema, StorePreferencesSchema, FirstProductSchema } from "./
 
 interface OnboardingState {
   step: number;
+  storeId: number | null;
   vendorInfo: Partial<VendorInfoSchema>;
   storePreferences: Partial<StorePreferencesSchema>;
   firstProduct: Partial<FirstProductSchema>;
@@ -13,12 +14,14 @@ interface OnboardingState {
   setFirstProduct: (data: Partial<FirstProductSchema>) => void;
   setStep: (step: number) => void;
   setIsUploading: (isUploading: boolean) => void;
+  setStoreId: (id: number) => void;
 }
 
 export const useOnboardingStore = create<OnboardingState>()(
   persist(
     (set) => ({
       step: 1,
+      storeId: null,
       vendorInfo: {},
       storePreferences: {},
       firstProduct: {},
@@ -28,6 +31,7 @@ export const useOnboardingStore = create<OnboardingState>()(
       setFirstProduct: (data) => set((state) => ({ firstProduct: { ...state.firstProduct, ...data } })),
       setStep: (step) => set({ step }),
       setIsUploading: (isUploading) => set({ isUploading }),
+      setStoreId: (id) => set({ storeId: id }),
     }),
     {
       name: "vendor-onboarding",

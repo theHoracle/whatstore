@@ -44,6 +44,33 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* Light mode adjustments */
+:root {
+  --background-light: #f9fafb;
+  --foreground-light: #1f2937;
+  --card-light: #ffffff;
+  --card-border-light: #e5e7eb;
+  --primary-light: #6366f1;
+  --primary-foreground-light: #ffffff;
+  --secondary-light: #f3f4f6;
+  --secondary-foreground-light: #374151;
+  --muted-light: #e5e7eb;
+  --muted-foreground-light: #6b7280;
+}
+
+html[data-theme="light"] {
+  --background: var(--background-light);
+  --foreground: var(--foreground-light);
+  --card: var(--card-light);
+  --card-border: var(--card-border-light);
+  --primary: var(--primary-light);
+  --primary-foreground: var(--primary-foreground-light);
+  --secondary: var(--secondary-light);
+  --secondary-foreground: var(--secondary-foreground-light);
+  --muted: var(--muted-light);
+  --muted-foreground: var(--muted-foreground-light);
+}
+
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -119,5 +146,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
+    transition: background-color 0.3s, color 0.3s;
   }
 }
