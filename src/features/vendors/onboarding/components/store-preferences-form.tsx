@@ -65,6 +65,21 @@ export function StorePreferencesForm() {
     []
   );
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Set the file in form
+    form.setValue("storeLogo", file);
+    
+    // Show preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const form = useForm<StorePreferencesSchema>({
     resolver: zodResolver(storePreferencesSchema),
     defaultValues: {
@@ -143,6 +158,13 @@ export function StorePreferencesForm() {
                           onKeyDown={handleKeyDown}
                           className="relative aspect-square w-full max-w-[320px] mx-auto cursor-pointer overflow-hidden rounded-2xl border-2 border-dashed border-slate-700/50 hover:border-cyan-400 transition-all duration-300 bg-gradient-to-br from-slate-800/50 to-slate-900/50"
                         >
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleImageChange}
+                          />
                           {preview ? (
                             <>
                               <Image
@@ -169,19 +191,6 @@ export function StorePreferencesForm() {
                             </div>
                           )}
                         </div>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          ref={fileInputRef}
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              onChange([file]);
-                              setPreview(URL.createObjectURL(file));
-                            }
-                          }}
-                        />
                       </div>
                     </FormControl>
                     <FormDescription className="text-center text-xs text-slate-500 mt-3">
