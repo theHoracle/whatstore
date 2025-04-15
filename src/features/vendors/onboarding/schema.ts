@@ -25,11 +25,14 @@ export const storePreferencesSchema = z.object({
   storeName: z.string().min(3),
   storeUrl: z.string().min(3),
   storeLogo: z
-    .any()
-    .refine((file) => file instanceof File, "Invalid file type")
-    .refine((file: File) => file.size <= MAX_FILE_SIZE, "Max image size is 5MB")
+    .custom<File>((file) => file instanceof File, {
+      message: "Store logo is required",
+    })
+    .refine((file) => file.size <= MAX_FILE_SIZE, {
+      message: "Max file size is 5MB",
+    })
     .refine(
-      (file: File) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
       "Only .jpg, .jpeg, .png and .webp formats are supported"
     ),
   storeDescription: z.string().min(20),
