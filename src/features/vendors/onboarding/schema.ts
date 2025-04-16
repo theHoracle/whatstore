@@ -22,22 +22,12 @@ export const vendorInfoSchema = z.object({
 });
 
 export const storePreferencesSchema = z.object({
-  storeName: z.string().min(3),
-  storeUrl: z.string().min(3),
-  storeLogo: z
-    .custom<File>((file) => file instanceof File, {
-      message: "Store logo is required",
-    })
-    .refine((file) => file.size <= MAX_FILE_SIZE, {
-      message: "Max file size is 5MB",
-    })
-    .refine(
-      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
-      "Only .jpg, .jpeg, .png and .webp formats are supported"
-    ),
-  storeDescription: z.string().min(20),
-  storeWhatsappContact: z.string(),
-  storeAddress: z.string().min(5), 
+  storeName: z.string().min(3, "Store name must be at least 3 characters"),
+  storeUrl: z.string().min(3, "Store URL must be at least 3 characters"),
+  storeDescription: z.string().min(20, "Description must be at least 20 characters"),
+  storeWhatsappContact: z.string().min(10, "Please enter a valid WhatsApp number"),
+  storeAddress: z.string().min(5, "Address must be at least 5 characters"),
+  storeLogo: z.string().min(1, "Store logo is required"),
 });
 
 // Form schemas for product and service

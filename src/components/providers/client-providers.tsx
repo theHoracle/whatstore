@@ -1,33 +1,18 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
 import { ThemeProvider } from "./theme-provider";
+import { Toaster } from "../ui/sonner";
 
-const ClientProvider = ({ children }: { children: React.ReactNode }) => {
-  const [queryClient] = useState(() => new QueryClient(
-    {
-      defaultOptions: {
-        queries: {
-          retry: 1,
-          refetchOnWindowFocus: true,
-        },
-      },
-    }
-  ));
+const queryClient = new QueryClient();
 
+export function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
         {children}
+        <Toaster />
       </ThemeProvider>
     </QueryClientProvider>
   );
-};
-
-export default ClientProvider;
+}

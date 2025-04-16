@@ -27,7 +27,8 @@ import debounce from "lodash/debounce";
 import clientApi from "@/lib/api/client";
 import { AxiosError } from "axios";
 import { useOnboardingStore } from "../store";
-
+import { getToken } from "@/app/getjwt/actions";
+import { useUser } from "@clerk/nextjs";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "whatstore.com/store/";
 
@@ -35,10 +36,13 @@ export function StorePreferencesForm() {
   const router = useRouter();
   const [preview, setPreview] = useState<string>();
   const [isUploading, setIsUploading] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadedLogoUrl, setUploadedLogoUrl] = useState<string>();
   const [isCheckingUrl, setIsCheckingUrl] = useState(false);
   const [isUrlAvailable, setIsUrlAvailable] = useState<boolean | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { setStoreId } = useOnboardingStore();
+  const { user } = useUser();
 
   // Create a debounced function to check URL availability
   const checkUrlAvailability = useCallback(
@@ -65,19 +69,42 @@ export function StorePreferencesForm() {
     []
   );
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     
-    // Set the file in form
-    form.setValue("storeLogo", file);
-    
-    // Show preview
+    // Show preview immediately
     const reader = new FileReader();
     reader.onload = (e) => {
       setPreview(e.target?.result as string);
     };
     reader.readAsDataURL(file);
+
+    // Start upload process
+    try {
+      setIsUploadingImage(true);
+      const token = await getToken();
+      if (!token || !user) {
+        throw new Error("Authentication required");
+      }
+
+      // Use user ID and current store name (or timestamp if no name yet) for the file path
+      const storeName = form.getValues("storeName") || Date.now().toString();
+      const path = `store-logos/${user.id}/${storeName}`;
+      
+      const logoUrl = await uploadImage(file, path, token);
+      setUploadedLogoUrl(logoUrl);
+      form.setValue("storeLogo", logoUrl);
+    } catch (error) {
+      toast.error("Failed to upload image. Please try again.");
+      // Reset the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      setPreview(undefined);
+    } finally {
+      setIsUploadingImage(false);
+    }
   };
 
   const form = useForm<StorePreferencesSchema>({
@@ -88,6 +115,7 @@ export function StorePreferencesForm() {
       storeDescription: "",
       storeWhatsappContact: "",
       storeAddress: "",
+      storeLogo: "", // Add default empty string for storeLogo
     },
   });
 
@@ -97,16 +125,18 @@ export function StorePreferencesForm() {
       return;
     }
 
+    if (!uploadedLogoUrl) {
+      toast.error("Please upload a store logo");
+      return;
+    }
+
     try {
       setIsUploading(true);
-      // Upload the logo to Supabase and get the URL
-      const storeLogo = data.storeLogo;
-      const logoUrl = await uploadImage(storeLogo, "store-logos");
-
-      // Create the store with the logo URL
+      
+      // Create the store with the already uploaded logo URL
       const storeData = await createStore({
         ...data,
-        storeLogo: logoUrl,
+        storeLogo: uploadedLogoUrl,
       });
 
       setStoreId(storeData.id);
@@ -164,6 +194,7 @@ export function StorePreferencesForm() {
                             accept="image/*"
                             className="hidden"
                             onChange={handleImageChange}
+                            disabled={isUploadingImage}
                           />
                           {preview ? (
                             <>
@@ -174,8 +205,15 @@ export function StorePreferencesForm() {
                                 className="object-cover transition-transform duration-300 group-hover:scale-110"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-6">
-                                <span className="text-sm font-medium text-white bg-black/50 px-4 py-2 rounded-full">
-                                  Change Logo
+                                <span className="text-sm font-medium text-white bg-black/50 px-4 py-2 rounded-full flex items-center gap-2">
+                                  {isUploadingImage ? (
+                                    <>
+                                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                      <span>Uploading...</span>
+                                    </>
+                                  ) : (
+                                    "Change Logo"
+                                  )}
                                 </span>
                               </div>
                             </>
@@ -194,7 +232,11 @@ export function StorePreferencesForm() {
                       </div>
                     </FormControl>
                     <FormDescription className="text-center text-xs text-slate-500 mt-3">
-                      Recommended: A square image in PNG or JPG format, at least 512x512px. Must be less than 5MB
+                      {isUploadingImage ? (
+                        "Uploading your image..."
+                      ) : (
+                        "Recommended: A square image in PNG or JPG format, at least 512x512px. Must be less than 5MB"
+                      )}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
