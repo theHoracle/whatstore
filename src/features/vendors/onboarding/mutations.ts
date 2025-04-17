@@ -48,7 +48,7 @@ type ServiceData = {
   description: string;
   rate: number;
   currency: string;
-  image: string; // URL from Supabase storage
+  imageUrl: string; // Changed from image to match Service interface
   storeId: number;
 };
 

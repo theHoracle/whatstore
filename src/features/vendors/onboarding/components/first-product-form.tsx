@@ -19,7 +19,7 @@ import { firstProductSchema, type FirstProductSchema } from "../schema";
 import { toast } from "sonner";
 import { createProduct, createService } from "../mutations";
 import { useRef, useState } from "react";
-import { uploadImages } from "@/utils/upload";
+import { uploadImage, uploadImages } from "@/utils/upload";
 import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { getToken } from "@/app/getjwt/actions";
 
 const TEMP_CATEGORIES = [
   "Electronics",
@@ -62,17 +63,23 @@ export function FirstProductForm() {
   const type = form.watch("type");
 
   const onSubmit = async (data: FirstProductSchema) => {
+    if (!storeId) {
+      toast.error("Store ID is required");
+      return;
+    }
+
     try {
       setIsUploading(true);
-      
-      if (!storeId) {
-        toast.error("Store ID not found. Please try again.");
-        return;
+
+      // Get auth token for file uploads
+      const token = await getToken();
+      if (!token) {
+        throw new Error("Authentication required");
       }
 
       if (data.type === "product") {
         // Upload product images first
-        const imageUrls = await uploadImages(data.images, "product-images");
+        const imageUrls = await uploadImages(data.images, "product-images", token);
         // Create product with uploaded URLs
         await createProduct(storeId, {
           name: data.name,
@@ -81,23 +88,23 @@ export function FirstProductForm() {
           currency: data.currency,
           stock: data.stock,
           category: data.category,
-          images: imageUrls, 
-          storeId
+          images: imageUrls,
+          storeId,
         });
       } else {
-        // Upload single service image
-        const [imageUrl] = await uploadImages([data.image], "service-images");
+        // Upload service image
+        const imageUrl = await uploadImage(data.image, "service-images", token);
         // Create service with uploaded URL
         await createService(storeId, {
           name: data.name,
           description: data.description,
           rate: data.rate,
           currency: data.currency,
-          image: imageUrl, 
-          storeId
+          imageUrl,
+          storeId,
         });
       }
-      
+
       router.push("/dashboard");
     } catch (error) {
       console.error('Error creating product/service:', error);
@@ -427,9 +434,11 @@ export function FirstProductForm() {
                               className="hidden"
                               ref={fileInputRef}
                               onChange={(e) => {
-                                const files = Array.from(e.target.files || []);
-                                onChange([files[0]]);
-                                setPreviews([URL.createObjectURL(files[0])]);
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  onChange(file);
+                                  setPreviews([URL.createObjectURL(file)]);
+                                }
                               }}
                             />
                           </div>

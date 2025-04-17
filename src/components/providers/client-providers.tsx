@@ -6,12 +6,11 @@ import { Toaster } from "../ui/sonner";
 
 const queryClient = new QueryClient();
 
-export function ClientProviders({ children }: { children: React.ReactNode }) {
+export default function ClientProviders({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        {children}
-        <Toaster />
+        {children} 
       </ThemeProvider>
     </QueryClientProvider>
   );
