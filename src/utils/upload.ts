@@ -9,7 +9,7 @@ export async function uploadImage(file: File, path: string, token: string) {
     
     const { data, error } = await supabase.storage
       .from(bucketName)
-      .upload(`${path}/${crypto.randomUUID()}`, file, {
+      .upload(`${path}-image`, file, {
         cacheControl: '3600',
         upsert: false
       });

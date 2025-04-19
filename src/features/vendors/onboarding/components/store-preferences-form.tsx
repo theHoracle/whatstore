@@ -27,8 +27,9 @@ import debounce from "lodash/debounce";
 import clientApi from "@/lib/api/client";
 import { AxiosError } from "axios";
 import { useOnboardingStore } from "../store";
-import { getToken } from "@/app/getjwt/actions";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
+
+
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "whatstore.com/store/";
 
@@ -42,7 +43,8 @@ export function StorePreferencesForm() {
   const [isUrlAvailable, setIsUrlAvailable] = useState<boolean | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { setStoreId } = useOnboardingStore();
-  const { user } = useUser();
+  const  { token, userId } = useAuth()
+ 
 
   // Create a debounced function to check URL availability
   const checkUrlAvailability = useCallback(
@@ -90,7 +92,7 @@ export function StorePreferencesForm() {
 
       // Use user ID and current store name (or timestamp if no name yet) for the file path
       const storeName = form.getValues("storeName") || Date.now().toString();
-      const path = `store-logos/${user.id}/${storeName}`;
+      const path = `store-logos/${userId}/${storeName}`;
       
       const logoUrl = await uploadImage(file, path, token);
       setUploadedLogoUrl(logoUrl);
