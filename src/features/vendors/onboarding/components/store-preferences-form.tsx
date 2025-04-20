@@ -43,7 +43,7 @@ export function StorePreferencesForm() {
   const [isUrlAvailable, setIsUrlAvailable] = useState<boolean | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { setStoreId } = useOnboardingStore();
-  const  { token, userId } = useAuth()
+  const  { getToken, userId } = useAuth()
  
 
   // Create a debounced function to check URL availability
@@ -85,8 +85,10 @@ export function StorePreferencesForm() {
     // Start upload process
     try {
       setIsUploadingImage(true);
-      const token = await getToken();
-      if (!token || !user) {
+      const token = await getToken({
+        template: "supabase"
+      });
+      if (!token || !userId) {
         throw new Error("Authentication required");
       }
 
