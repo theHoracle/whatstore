@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Hero from "@/components/hero";
 import Navbar from "@/components/nav/default-nav";
 import { Features } from "@/components/sections/features";
@@ -6,6 +7,16 @@ import { Pricing } from "@/components/sections/pricing";
 import { FAQ } from "@/components/sections/faq";
 import { Footer } from "@/components/sections/footer";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+
+export const metadata: Metadata = {
+  title: "WhatStore | Your Digital Marketplace Platform",
+  description: "Launch your digital store on WhatStore. Sell software, digital art, e-books, and online courses with AI-powered tools and secure payment processing.",
+  keywords: "digital marketplace, sell digital products, online store, e-commerce platform, digital downloads",
+  openGraph: {
+    title: "WhatStore | Your Digital Marketplace Platform",
+    description: "Launch your digital store on WhatStore. Sell software, digital art, e-books, and online courses with AI-powered tools and secure payment processing.",
+  }
+};
 
 export default function Home() { 
   return (

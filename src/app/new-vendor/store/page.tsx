@@ -1,4 +1,22 @@
+import type { Metadata } from "next";
 import { StorePreferencesForm } from "@/features/vendors/onboarding/components/store-preferences-form";
+
+export const metadata: Metadata = {
+  title: "Setup Your Store | WhatStore",
+  description: "Configure your digital storefront on WhatStore. Customize your store settings, branding, and start selling your digital products.",
+  robots: "noindex, follow",
+  openGraph: {
+    title: "Setup Your Digital Store | WhatStore",
+    description: "Configure your digital storefront on WhatStore. Customize your store settings, branding, and start selling your digital products.",
+    url: `${process.env.NEXT_PUBLIC_APP_URL}/new-vendor/store`,
+    images: [{
+      url: process.env.NEXT_PUBLIC_OPENGRAPH_IMAGE || "",
+      width: 1200,
+      height: 630,
+      alt: "Setup Your WhatStore Digital Store"
+    }],
+  }
+};
 
 export default function StorePage() {
   return (

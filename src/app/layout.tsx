@@ -16,8 +16,38 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WhatStore | Get your online store",
-  description: "The best place to find the best vendors",
+  title: "WhatStore | Digital Marketplace for Online Stores",
+  description: "Create and manage your digital storefront on WhatStore. Sell software, digital art, e-books, and more with AI-powered tools and secure payment processing.",
+  keywords: "digital marketplace, online store, e-commerce, digital products, software marketplace, digital downloads, AI-powered store",
+  authors: [{ name: "WhatStore" }],
+  creator: "WhatStore",
+  publisher: "WhatStore, Inc.",
+  robots: "index, follow",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: process.env.NEXT_PUBLIC_APP_URL,
+    siteName: "WhatStore",
+    title: "WhatStore | Digital Marketplace for Online Stores",
+    description: "Create and manage your digital storefront on WhatStore. Sell software, digital art, e-books, and more with AI-powered tools and secure payment processing.",
+    images: [{
+      url: process.env.NEXT_PUBLIC_OPENGRAPH_IMAGE || "",
+      width: 1200,
+      height: 630,
+      alt: "WhatStore - Your Digital Marketplace Platform"
+    }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WhatStore | Digital Marketplace for Online Stores",
+    description: "Create and manage your digital storefront on WhatStore. Sell software, digital art, e-books, and more with AI-powered tools and secure payment processing.",
+    images: [process.env.NEXT_PUBLIC_OPENGRAPH_IMAGE || ""],
+    creator: "@whatstore"
+  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || ""),
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_APP_URL
+  }
 };
 
 export default function RootLayout({
