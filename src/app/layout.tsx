@@ -27,11 +27,15 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html suppressHydrationWarning lang="en">
+      <html suppressHydrationWarning lang="en" className="scroll-smooth">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col`}
+          className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col antialiased`}
         >
-          <ClientProvider>{children}</ClientProvider>
+          <ClientProvider>
+            <div className="relative flex min-h-screen flex-col">
+              {children}
+            </div>
+          </ClientProvider>
           <Toaster />
         </body>
       </html>

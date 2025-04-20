@@ -1,13 +1,36 @@
 import Hero from "@/components/hero";
 import Navbar from "@/components/nav/default-nav";
-
-
+import { Features } from "@/components/sections/features";
+import { AIFeatures } from "@/components/sections/ai-features";
+import { Pricing } from "@/components/sections/pricing";
+import { FAQ } from "@/components/sections/faq";
+import { Footer } from "@/components/sections/footer";
+import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 
 export default function Home() { 
   return (
-    <div className="font-[family-name:var(--font-geist-sans)]">
+    <div className="relative min-h-screen flex flex-col font-[family-name:var(--font-geist-sans)]">
       <Navbar />
-      <Hero />
+      <main className="flex-1 w-full pt-24">
+        <Hero />
+        <div className="w-full space-y-24 md:space-y-32 lg:space-y-40 flex flex-col items-center">
+          <MaxWidthWrapper className="flex flex-col items-center">
+         
+            <Features />
+         
+            <AIFeatures />
+         
+         
+            <Pricing />
+         
+         
+            <FAQ />
+          </MaxWidthWrapper>
+        </div>
+      </main>
+    
+        <Footer />
+    
     </div>
   );
 }

@@ -1,42 +1,66 @@
+import { Search } from "lucide-react";
+import MaxWidthWrapper from "./MaxWidthWrapper";
+
 const Hero = () => {
   return (
-    <div className="h-[calc(100lvh-64px)] w-full bg-zinc-950 flex items-center justify-center">
-      <div className="flex flex-col items-center gap-8">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search products..."
-            className="w-[500px] h-14 px-6 rounded-xl bg-zinc-900 
-            shadow-[inset_-2px_-2px_4px_rgba(255,255,255,0.1),inset_2px_2px_4px_rgba(0,0,0,0.5)]
-            text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-700
-            transition-all duration-300"
-          />
-          <button className="absolute right-4 top-1/2 -translate-y-1/2">
-            <svg
-              className="w-5 h-5 text-zinc-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+    <section className="relative w-full h-[calc(100lvh-50px)] -mt-10 overflow-hidden border-b bg-background py-20 sm:py-32">
+      <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
+      
+      <MaxWidthWrapper>
+        <div className="flex flex-col items-center gap-8 text-center">
+          <div className="space-y-4 max-w-[800px]">
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <span className="px-3 py-1 text-sm bg-primary/10 text-primary rounded-full font-medium">
+                Launch Your Digital Store Today
+              </span>
+            </div>
+            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+              Discover Amazing Products
+            </h1>
+            <p className="mx-auto max-w-[700px] text-muted-foreground text-lg md:text-xl">
+              Your one-stop marketplace for digital products. Find software, themes, digital art, and more from trusted vendors worldwide.
+            </p>
+          </div>
+          
+          <div className="relative w-full max-w-[500px] group">
+            <input
+              type="text"
+              placeholder="Search products..."
+              className="w-full h-12 px-6 rounded-full bg-background/50 
+              border border-border shadow-sm
+              text-foreground focus:outline-none focus:ring-2 focus:ring-ring
+              transition-all duration-300"
+            />
+            <button className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+              <Search className="size-5" />
+            </button>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 items-center z-10">
+            <a
+              href="/new-vendor"
+              className="inline-flex items-center justify-center h-10 px-5 py-2 bg-primary text-primary-foreground hover:bg-primary/90 
+              rounded-full text-sm font-medium transition-all duration-200 shadow-sm hover:shadow
+              active:scale-[0.98]"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </button>
+              Become a vendor
+            </a>
+            <a
+              href="/products"
+              className="inline-flex items-center justify-center h-10 px-5 py-2
+              text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200
+              hover:bg-muted rounded-full"
+            >
+              Browse products
+            </a>
+          </div>
         </div>
-        <a
-          href="/become-vendor"
-          className="text-zinc-600 hover:text-zinc-500 transition-colors duration-300
-          px-6 py-2 rounded-lg
-          shadow-[-2px_-2px_4px_rgba(255,255,255,0.1),2px_2px_4px_rgba(0,0,0,0.5)]"
-        >
-          Become a vendor
-        </a>
-      </div>
-    </div>
+      </MaxWidthWrapper>
+
+      {/* Bottom fade effect */}
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent pointer-events-none" />
+    </section>
   );
 };
 

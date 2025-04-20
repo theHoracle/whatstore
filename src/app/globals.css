@@ -151,3 +151,31 @@ html[data-theme="light"] {
     transition: background-color 0.3s, color 0.3s;
   }
 }
+
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+  mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+}
+
+/* Sheet animation overrides */
+.sheet-overlay {
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sheet-content {
+  --sheet-background: hsla(0, 0%, 100%, 0.95);
+  background: var(--sheet-background);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .sheet-content {
+  --sheet-background: hsla(240, 10%, 3.9%, 0.95);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}

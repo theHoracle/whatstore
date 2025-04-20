@@ -79,7 +79,7 @@ export async function createVendor() {
 }
 
 export const createStore = async (data: CreateStoreInput) => {
-  const res = await clientApi.post<StoreResponse>("/stores", {
+  const res = await clientApi.post<StoreResponse>("/stores/create", {
     storeName: data.storeName,
     storeLogo: data.storeLogo,
     storeUrl: data.storeUrl,
