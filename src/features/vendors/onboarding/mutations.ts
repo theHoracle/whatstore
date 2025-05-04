@@ -48,8 +48,7 @@ type ServiceData = {
   description: string;
   rate: number;
   currency: string;
-  imageUrl: string; // Changed from image to match Service interface
-  storeId: number;
+  imageUrl: string; // Changed from image to match Service interface 
 };
 
 export async function createVendor() {  

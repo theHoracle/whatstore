@@ -93,19 +93,18 @@ export function FirstProductForm() {
         });
       } else {
         // Upload service image
-        const imageUrl = await uploadImage(data.image, "service-images", token);
+        const imageUrl = await uploadImage(data.image, "service-image", token);
         // Create service with uploaded URL
         await createService(storeId, {
           name: data.name,
           description: data.description,
           rate: data.rate,
           currency: data.currency,
-          imageUrl,
-          storeId,
+          imageUrl, 
         });
       }
 
-      router.push("/dashboard");
+      router.push("/dashboard/overview");
     } catch (error) {
       console.error('Error creating product/service:', error);
       toast.error("Failed to create. Please try again.");
