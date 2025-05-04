@@ -31,9 +31,12 @@ const apiServer = {
 };
 
 export const getServerSideUser = async () => { 
-    const res = await apiServer.get<User>('/users/me');
-    if (res.status !== 200) {
-        throw new Error('Failed to fetch user');
+    try {
+        const res = await apiServer.get<User>('/users/me');
+        return res.data;
+    } catch (error) {
+        // Handle authentication errors or API connection issues
+        console.error('Error fetching user:', error);
+        return null;
     }
-    return res.data;
 }
