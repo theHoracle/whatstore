@@ -1,12 +1,6 @@
 import { redirect } from "next/navigation";
 import { getServerSideUser } from "@/lib/api/server";
-import dynamic from 'next/dynamic';
-
-// Use dynamic import with ssr: false to prevent hydration mismatch
-const VendorDashboardShell = dynamic(
-  () => import("./_components/vendor-dashboard-shell"), 
-  { ssr: false }
-);
+import VendorDashboardShell from "./_components/vendor-dashboard-shell";
 
 // Mock user for development purposes when API is not available
 const mockVendorUser = {

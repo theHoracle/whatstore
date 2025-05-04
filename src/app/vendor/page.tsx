@@ -1,15 +1,7 @@
-import type { Metadata } from "next";
-import { BarChart3, Boxes, CreditCard, ShoppingCart, Users } from "lucide-react";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Vendor Dashboard | WhatStore",
-  description: "Manage your digital stores, products, orders, and monitor your sales performance - all in one place.",
-  robots: "noindex, nofollow", // Dashboard pages should be private
-  openGraph: {
-    title: "WhatStore Vendor Dashboard",
-    description: "Manage your digital stores, products, orders, and monitor your sales performance - all in one place.",
-  }
-};
+import { useEffect, useState } from "react";
+import { BarChart3, Boxes, CreditCard, ShoppingCart, Users } from "lucide-react";
 
 const DashboardCard = ({
   title,
@@ -91,6 +83,12 @@ const RecentOrderCard = ({
 };
 
 export default function VendorDashboardPage() {
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <div className="p-4 md:p-6 lg:p-8 space-y-8">
       <div className="flex flex-col space-y-4">
