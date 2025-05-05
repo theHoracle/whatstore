@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WhatStore | Digital Marketplace for Online Stores",
-  description: "Create and manage your digital storefront on WhatStore. Sell software, digital art, e-books, and more with AI-powered tools and secure payment processing.",
-  keywords: "digital marketplace, online store, e-commerce, digital products, software marketplace, digital downloads, AI-powered store",
+  title: "WhatStore | Create and Grow Your Online Store",
+  description: "Launch your online store on WhatStore. Sell products and services with powerful tools, secure payments, and reach customers worldwide.",
+  keywords: "online store, e-commerce platform, sell online, marketplace, products, services, online business",
   authors: [{ name: "WhatStore" }],
   creator: "WhatStore",
   publisher: "WhatStore, Inc.",
@@ -28,19 +28,19 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: process.env.NEXT_PUBLIC_APP_URL,
     siteName: "WhatStore",
-    title: "WhatStore | Digital Marketplace for Online Stores",
-    description: "Create and manage your digital storefront on WhatStore. Sell software, digital art, e-books, and more with AI-powered tools and secure payment processing.",
+    title: "WhatStore | Create and Grow Your Online Store",
+    description: "Launch your online store on WhatStore. Sell products and services with powerful tools, secure payments, and reach customers worldwide.",
     images: [{
       url: process.env.NEXT_PUBLIC_OPENGRAPH_IMAGE || "",
       width: 1200,
       height: 630,
-      alt: "WhatStore - Your Digital Marketplace Platform"
+      alt: "WhatStore - Your Online Store Platform"
     }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "WhatStore | Digital Marketplace for Online Stores",
-    description: "Create and manage your digital storefront on WhatStore. Sell software, digital art, e-books, and more with AI-powered tools and secure payment processing.",
+    title: "WhatStore | Create and Grow Your Online Store",
+    description: "Launch your online store on WhatStore. Sell products and services with powerful tools, secure payments, and reach customers worldwide.",
     images: [process.env.NEXT_PUBLIC_OPENGRAPH_IMAGE || ""],
     creator: "@whatstore"
   },

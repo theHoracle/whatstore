@@ -5,47 +5,61 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const faqs = {
+const categories = {
   general: [
     {
-      question: "What types of digital products can I sell?",
-      answer: "You can sell a wide range of digital products including software, e-books, digital art, music, templates, themes, plugins, and online courses. Any digital file that can be downloaded or accessed online can be sold on our platform."
+      question: "What can I sell on WhatStore?",
+      answer: "You can sell almost anything on WhatStore - physical products, digital goods, or services. This includes clothing, electronics, handmade items, digital downloads, consulting services, online courses, and much more. Of course, all items must comply with our terms of service and legal requirements."
     },
     {
-      question: "How do payouts work?",
-      answer: "We process payouts automatically every week for all sales made, minus our platform fee. Payments are made via Stripe to your connected bank account. Enterprise customers can request custom payout schedules."
+      question: "How do I start selling?",
+      answer: "Starting is easy! Sign up for a WhatStore account, complete your store setup with basic information, add your first product or service, and you're ready to start selling. Our onboarding process guides you through each step."
     },
     {
-      question: "Is there a limit to file sizes?",
-      answer: "Basic accounts can upload files up to 1GB per product. Pro accounts have a 5GB limit per product, and Enterprise accounts have custom limits. All files are stored securely and delivered via high-speed CDN."
+      question: "What are the fees?",
+      answer: "WhatStore offers transparent pricing with different plans to suit your needs. Each plan includes features like secure payment processing, customer management, and analytics. Transaction fees vary by plan - view our pricing page for detailed information."
     }
   ],
-  aiFeatures: [
+  payments: [
+    {
+      question: "How do payments work?",
+      answer: "We support multiple payment methods including credit cards, digital wallets, and local payment options. For physical products, payment is processed at checkout. For services, you can choose between upfront payments or custom payment schedules."
+    },
+    {
+      question: "When do I get paid?",
+      answer: "Payment processing times vary by country and payment method. Typically, funds are available in your account within 2-7 business days after a successful transaction. You can track all payments in your seller dashboard."
+    },
+    {
+      question: "What payment methods can I accept?",
+      answer: "You can accept major credit cards, digital wallets like Apple Pay and Google Pay, and local payment methods depending on your location. We're constantly adding new payment options to help you serve more customers."
+    }
+  ],
+  features: [
     {
       question: "How does the AI assistant help my store?",
-      answer: "Our AI assistant helps optimize your product listings, suggests pricing strategies, automates customer support, and provides insights on sales patterns. It can also help manage inventory and create marketing content."
+      answer: "Our AI helps optimize product listings, manages inventory, automates customer support, and provides insights on sales patterns. It can help write descriptions, suggest pricing strategies, and identify growth opportunities."
     },
     {
-      question: "Can the AI write product descriptions?",
-      answer: "Yes! Our AI can generate SEO-optimized product descriptions, marketing copy, and social media content based on your product details and target audience. You can edit and refine the generated content as needed."
+      question: "Can I manage multiple stores?",
+      answer: "Yes! You can create and manage multiple stores under one account. This is perfect if you want to separate different product lines or create distinct brand experiences for different target audiences."
     },
     {
-      question: "How accurate is the AI customer support?",
-      answer: "Our AI customer support is trained on your product catalog and common customer queries. It handles over 80% of customer questions accurately and knows when to escalate to human support for complex issues."
+      question: "What marketing tools are available?",
+      answer: "WhatStore provides built-in SEO tools, social media integration, email marketing capabilities, and promotional features. You can also access analytics to track your marketing performance and customer behavior."
     }
   ],
-  business: [
+  support: [
     {
-      question: "Can I sell subscription-based products?",
-      answer: "Yes! You can set up recurring subscriptions for your digital products. This is perfect for software licenses, member-only content, or any service that requires regular updates or access."
+      question: "How do I handle shipping for physical products?",
+      answer: "WhatStore integrates with major shipping carriers and provides tools to manage shipping rates, print labels, and track deliveries. You can set up flat-rate shipping, calculated rates, or offer free shipping."
     },
     {
-      question: "What kind of analytics do you provide?",
-      answer: "We provide detailed analytics including sales trends, customer behavior, traffic sources, conversion rates, and revenue reports. Pro and Enterprise plans get access to advanced analytics with AI-powered insights."
+      question: "How do I manage service bookings?",
+      answer: "Our service booking system lets you set availability, manage appointments, and handle scheduling. Customers can book time slots, and you'll receive notifications. You can also set custom booking rules and cancellation policies."
     },
     {
-      question: "How do I handle customer support?",
-      answer: "You have multiple options: use our AI-powered automated support, handle inquiries manually through our dashboard, or combine both. Enterprise plans include dedicated support staff to help manage customer interactions."
+      question: "What kind of support do sellers get?",
+      answer: "We provide 24/7 seller support, detailed documentation, video tutorials, and a community forum. Our seller success team is always ready to help you grow your business on WhatStore."
     }
   ]
 };
@@ -71,7 +85,7 @@ export function FAQ() {
           <div className="space-y-6">
             <h3 className="text-xl font-semibold">General Questions</h3>
             <Accordion type="single" collapsible className="w-full">
-              {faqs.general.map((faq, index) => (
+              {categories.general.map((faq, index) => (
                 <AccordionItem key={index} value={`general-${index}`}>
                   <AccordionTrigger className="text-left">
                     {faq.question}
@@ -85,10 +99,10 @@ export function FAQ() {
           </div>
 
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold">AI Features</h3>
+            <h3 className="text-xl font-semibold">Payments</h3>
             <Accordion type="single" collapsible className="w-full">
-              {faqs.aiFeatures.map((faq, index) => (
-                <AccordionItem key={index} value={`ai-${index}`}>
+              {categories.payments.map((faq, index) => (
+                <AccordionItem key={index} value={`payments-${index}`}>
                   <AccordionTrigger className="text-left">
                     {faq.question}
                   </AccordionTrigger>
@@ -101,10 +115,26 @@ export function FAQ() {
           </div>
 
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold">Business & Analytics</h3>
+            <h3 className="text-xl font-semibold">Features</h3>
             <Accordion type="single" collapsible className="w-full">
-              {faqs.business.map((faq, index) => (
-                <AccordionItem key={index} value={`business-${index}`}>
+              {categories.features.map((faq, index) => (
+                <AccordionItem key={index} value={`features-${index}`}>
+                  <AccordionTrigger className="text-left">
+                    {faq.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold">Support</h3>
+            <Accordion type="single" collapsible className="w-full">
+              {categories.support.map((faq, index) => (
+                <AccordionItem key={index} value={`support-${index}`}>
                   <AccordionTrigger className="text-left">
                     {faq.question}
                   </AccordionTrigger>

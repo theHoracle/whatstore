@@ -1,118 +1,23 @@
+"use client";
 import type { Metadata } from "next";
 import { CalendarIcon, Filter, MoreHorizontal, Search } from "lucide-react";
 import Link from "next/link";
+import { useVendorOrders } from "@/hooks/use-vendor-orders";
 
-export const metadata: Metadata = {
-  title: "Orders Management | WhatStore Vendor",
-  description: "Track, process, and manage customer orders for your digital products.",
-  robots: "noindex, nofollow", // Dashboard pages should be private
-  openGraph: {
-    title: "Orders Management | WhatStore Vendor",
-    description: "Track, process, and manage customer orders for your digital products.",
-  }
-};
-
-// Sample order data
-const orders = [
-  {
-    id: "ORD-2453",
-    customer: {
-      name: "John Doe",
-      email: "john.doe@example.com",
-    },
-    product: "Premium Theme Bundle",
-    store: "My Digital Store",
-    date: "May 20, 2024",
-    amount: "$59.99",
-    status: "completed",
-  },
-  {
-    id: "ORD-2452",
-    customer: {
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-    },
-    product: "E-commerce Starter Kit",
-    store: "My Digital Store",
-    date: "May 19, 2024",
-    amount: "$89.99",
-    status: "completed",
-  },
-  {
-    id: "ORD-2451",
-    customer: {
-      name: "Adam Johnson",
-      email: "adam.j@example.com",
-    },
-    product: "UI Component Library",
-    store: "Software Hub",
-    date: "May 18, 2024",
-    amount: "$129.99",
-    status: "processing",
-  },
-  {
-    id: "ORD-2450",
-    customer: {
-      name: "Sarah Williams",
-      email: "sarah.w@example.com",
-    },
-    product: "Digital Marketing Guide",
-    store: "My Digital Store",
-    date: "May 17, 2024",
-    amount: "$49.99",
-    status: "completed",
-  },
-  {
-    id: "ORD-2449",
-    customer: {
-      name: "Robert Brown",
-      email: "robert.b@example.com",
-    },
-    product: "Design System Pro",
-    store: "Software Hub",
-    date: "May 16, 2024",
-    amount: "$149.99",
-    status: "refunded",
-  },
-  {
-    id: "ORD-2448",
-    customer: {
-      name: "Emily Davis",
-      email: "emily.d@example.com",
-    },
-    product: "Photography Presets Pack",
-    store: "My Digital Store",
-    date: "May 15, 2024",
-    amount: "$29.99",
-    status: "processing",
-  },
-  {
-    id: "ORD-2447",
-    customer: {
-      name: "Michael Wilson",
-      email: "michael.w@example.com",
-    },
-    product: "Social Media Templates",
-    store: "My Digital Store",
-    date: "May 14, 2024",
-    amount: "$19.99",
-    status: "completed",
-  },
-  {
-    id: "ORD-2446",
-    customer: {
-      name: "Jennifer Lee",
-      email: "jennifer.l@example.com",
-    },
-    product: "SEO Strategy Guide",
-    store: "My Digital Store",
-    date: "May 13, 2024",
-    amount: "$44.99",
-    status: "pending",
-  },
-];
+// export const metadata: Metadata = {
+//   title: "Orders Management | WhatStore Vendor",
+//   description: "Track, process, and manage customer orders for your digital products.",
+//   robots: "noindex, nofollow",
+//   openGraph: {
+//     title: "Orders Management | WhatStore Vendor",
+//     description: "Track, process, and manage customer orders for your digital products.",
+//   }
+// };
 
 export default function OrdersPage() {
+  const { data, isLoading, error } = useVendorOrders();
+  const orders = data?.data || [];
+
   return (
     <div className="p-4 md:p-6 lg:p-8 space-y-6">
       <div className="flex items-center justify-between">
@@ -149,91 +54,117 @@ export default function OrdersPage() {
       <div className="grid grid-cols-4 gap-4">
         <div className="flex flex-col gap-1 rounded-xl border bg-card p-5 shadow-sm">
           <span className="text-sm text-muted-foreground">Total Orders</span>
-          <span className="text-2xl font-bold">234</span>
+          <span className="text-2xl font-bold">{orders.length}</span>
           <span className="text-xs text-muted-foreground">Last 30 days</span>
         </div>
         <div className="flex flex-col gap-1 rounded-xl border bg-card p-5 shadow-sm">
           <span className="text-sm text-muted-foreground">Completed</span>
-          <span className="text-2xl font-bold">198</span>
-          <span className="text-xs text-green-500">84.6% of total</span>
+          <span className="text-2xl font-bold">
+            {orders.filter(order => order.status === "completed").length}
+          </span>
+          <span className="text-xs text-green-500">
+            {((orders.filter(order => order.status === "completed").length / orders.length) * 100).toFixed(1)}% of total
+          </span>
         </div>
         <div className="flex flex-col gap-1 rounded-xl border bg-card p-5 shadow-sm">
           <span className="text-sm text-muted-foreground">Processing</span>
-          <span className="text-2xl font-bold">28</span>
-          <span className="text-xs text-amber-500">12% of total</span>
+          <span className="text-2xl font-bold">
+            {orders.filter(order => order.status === "processing").length}
+          </span>
+          <span className="text-xs text-amber-500">
+            {((orders.filter(order => order.status === "processing").length / orders.length) * 100).toFixed(1)}% of total
+          </span>
         </div>
         <div className="flex flex-col gap-1 rounded-xl border bg-card p-5 shadow-sm">
           <span className="text-sm text-muted-foreground">Refunded</span>
-          <span className="text-2xl font-bold">8</span>
-          <span className="text-xs text-red-500">3.4% of total</span>
+          <span className="text-2xl font-bold">
+            {orders.filter(order => order.status === "refunded").length}
+          </span>
+          <span className="text-xs text-red-500">
+            {((orders.filter(order => order.status === "refunded").length / orders.length) * 100).toFixed(1)}% of total
+          </span>
         </div>
       </div>
 
       <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="border-b bg-muted/40">
-              <tr>
-                <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Order</th>
-                <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Customer</th>
-                <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Product</th>
-                <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Store</th>
-                <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Date</th>
-                <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Amount</th>
-                <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Status</th>
-                <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders.map((order) => (
-                <tr key={order.id} className="border-b hover:bg-muted/50 transition-colors">
-                  <td className="py-3 px-4">
-                    <Link 
-                      href={`/vendor/orders/${order.id}`}
-                      className="font-medium text-primary hover:underline"
-                    >
-                      {order.id}
-                    </Link>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium">{order.customer.name}</span>
-                      <span className="text-xs text-muted-foreground">{order.customer.email}</span>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4 text-sm font-medium">{order.product}</td>
-                  <td className="py-3 px-4 text-sm">{order.store}</td>
-                  <td className="py-3 px-4 text-sm">{order.date}</td>
-                  <td className="py-3 px-4 text-sm font-medium">{order.amount}</td>
-                  <td className="py-3 px-4">
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      order.status === 'completed' ? 'bg-green-500/10 text-green-500' : 
-                      order.status === 'processing' ? 'bg-amber-500/10 text-amber-500' :
-                      order.status === 'refunded' ? 'bg-red-500/10 text-red-500' :
-                      'bg-blue-500/10 text-blue-500'
-                    }`}>
-                      <span className={`mr-1 h-2 w-2 rounded-full ${
-                        order.status === 'completed' ? 'bg-green-500' :
-                        order.status === 'processing' ? 'bg-amber-500' :
-                        order.status === 'refunded' ? 'bg-red-500' :
-                        'bg-blue-500'
-                      }`}></span>
-                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <button className="text-muted-foreground hover:text-foreground transition-colors">
-                      <MoreHorizontal className="h-5 w-5" />
-                    </button>
-                  </td>
+          {isLoading ? (
+            <div className="p-8 text-center text-muted-foreground">Loading orders...</div>
+          ) : error ? (
+            <div className="p-8 text-center text-red-500">
+              {error instanceof Error ? error.message : "Failed to load orders"}
+            </div>
+          ) : (
+            <table className="w-full">
+              <thead className="border-b bg-muted/40">
+                <tr>
+                  <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Order ID</th>
+                  <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Customer</th>
+                  <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Items</th>
+                  <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Store</th>
+                  <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Date</th>
+                  <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Amount</th>
+                  <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Status</th>
+                  <th className="py-3 px-4 text-left font-medium text-sm text-muted-foreground">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {orders.map((order) => (
+                  <tr key={order.id} className="border-b hover:bg-muted/50 transition-colors">
+                    <td className="py-3 px-4">
+                      <Link 
+                        href={`/vendor/orders/${order.id}`}
+                        className="font-medium text-primary hover:underline"
+                      >
+                        #{order.id}
+                      </Link>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">{order.userId}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-sm font-medium">
+                      {order.items.length} items
+                    </td>
+                    <td className="py-3 px-4 text-sm">{order.storeId}</td>
+                    <td className="py-3 px-4 text-sm">
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="py-3 px-4 text-sm font-medium">
+                      ${order.totalAmount.toFixed(2)}
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                        order.status === 'completed' ? 'bg-green-500/10 text-green-500' : 
+                        order.status === 'processing' ? 'bg-amber-500/10 text-amber-500' :
+                        order.status === 'refunded' ? 'bg-red-500/10 text-red-500' :
+                        'bg-blue-500/10 text-blue-500'
+                      }`}>
+                        <span className={`mr-1 h-2 w-2 rounded-full ${
+                          order.status === 'completed' ? 'bg-green-500' :
+                          order.status === 'processing' ? 'bg-amber-500' :
+                          order.status === 'refunded' ? 'bg-red-500' :
+                          'bg-blue-500'
+                        }`}></span>
+                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <button className="text-muted-foreground hover:text-foreground transition-colors">
+                        <MoreHorizontal className="h-5 w-5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
+        
         <div className="flex items-center justify-between px-4 py-3 border-t">
           <div className="text-sm text-muted-foreground">
-            Showing <span className="font-medium">1</span> to <span className="font-medium">8</span> of <span className="font-medium">234</span> orders
+            Showing <span className="font-medium">1</span> to <span className="font-medium">{orders.length}</span> of <span className="font-medium">{data?.total || 0}</span> orders
           </div>
           <div className="flex items-center space-x-2">
             <button 
@@ -272,4 +203,4 @@ export default function OrdersPage() {
       </div>
     </div>
   );
-} 
+}

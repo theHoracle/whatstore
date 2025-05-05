@@ -1,3 +1,22 @@
+import { Product, Service } from "@/features/vendors/onboarding/schema";
+
+export type { Product, Service };
+export interface Store {
+  id: number;
+  vendorId: number;
+  name: string;
+  description: string;
+  storeLogo: string;
+  storeUrl: string;
+  storeWhatsappContact: string;
+  storeAddress: string;
+  createdAt: string;
+  updatedAt: string;
+  products?: Product[];
+  services?: Service[];
+  orders?: Order[];
+}
+
 export interface Vendor {
   id: number;
   userId: number;

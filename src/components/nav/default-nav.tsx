@@ -76,6 +76,9 @@ const Navbar = () => {
                       <a href="/pricing">Pricing</a>
                     </Button>
                     <Button variant="ghost" className="w-full justify-start hover:bg-accent/50" asChild>
+                      <a href="/faq">FAQ</a>
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start hover:bg-accent/50" asChild>
                       <a href="/resources">Resources</a>
                     </Button>
                     <Button variant="ghost" className="w-full justify-start hover:bg-accent/50" asChild>

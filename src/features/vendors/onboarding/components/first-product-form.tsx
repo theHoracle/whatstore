@@ -33,13 +33,23 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { getToken } from "@/app/getjwt/actions";
+import { ShoppingBag, Wrench } from "lucide-react";
 
 const TEMP_CATEGORIES = [
-  "Electronics",
-  "Fashion",
-  "Home & Garden",
+  "Fashion & Accessories",
+  "Electronics & Gadgets",
+  "Home & Living",
+  "Food & Beverages",
   "Health & Beauty",
-  "Sports",
+  "Sports & Fitness",
+  "Books & Media",
+  "Art & Collectibles",
+  "Professional Services",
+  "Home Services",
+  "Education & Courses",
+  "Events & Entertainment",
+  "Automotive",
+  "Pet Supplies",
   "Other",
 ];
 
@@ -56,7 +66,7 @@ export function FirstProductForm() {
       price: 0,
       stock: 0,
       currency: "NGN",
-      category: ""
+      category: "",
     },
   });
 
@@ -100,13 +110,13 @@ export function FirstProductForm() {
           description: data.description,
           rate: data.rate,
           currency: data.currency,
-          imageUrl, 
+          imageUrl,
         });
       }
 
       router.push("/dashboard/overview");
     } catch (error) {
-      console.error('Error creating product/service:', error);
+      console.error("Error creating product/service:", error);
       toast.error("Failed to create. Please try again.");
     } finally {
       setIsUploading(false);
@@ -121,18 +131,25 @@ export function FirstProductForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="relative max-h-[calc(100vh-8rem)] overflow-y-auto space-y-8">
-        <Tabs 
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="relative max-h-[calc(100vh-8rem)] overflow-y-auto space-y-8"
+      >
+        <Tabs
           value={type}
           defaultValue="product"
           className="w-full"
-          onValueChange={(value) => form.setValue("type", value as "product" | "service")}
+          onValueChange={(value) =>
+            form.setValue("type", value as "product" | "service")
+          }
         >
           <TabsList className="grid w-full grid-cols-2 bg-slate-800/50 p-1 rounded-lg">
             <TabsTrigger value="product">
+              <ShoppingBag className="h-4 w-4 mr-2" />
               Product
             </TabsTrigger>
             <TabsTrigger value="service">
+              <Wrench className="h-4 w-4 mr-2" />
               Service
             </TabsTrigger>
           </TabsList>
@@ -147,7 +164,7 @@ export function FirstProductForm() {
                       Product Images
                     </h2>
                     <p className="text-sm text-slate-400 mt-1">
-                      Upload one or more images of your product
+                      Show your product from different angles
                     </p>
                   </div>
 
@@ -218,7 +235,7 @@ export function FirstProductForm() {
                     Product Details
                   </h2>
                   <p className="text-sm text-slate-400 mt-1">
-                    Provide information about your product
+                    Tell customers about your product
                   </p>
                 </div>
 
@@ -355,7 +372,10 @@ export function FirstProductForm() {
                           </FormControl>
                           <SelectContent>
                             {TEMP_CATEGORIES.map((category) => (
-                              <SelectItem key={category} value={category.toLowerCase()}>
+                              <SelectItem
+                                key={category}
+                                value={category.toLowerCase()}
+                              >
                                 {category}
                               </SelectItem>
                             ))}
@@ -394,7 +414,7 @@ export function FirstProductForm() {
                       Service Image
                     </h2>
                     <p className="text-sm text-slate-400 mt-1">
-                      Upload an image representing your service
+                      Add a photo that represents your service
                     </p>
                   </div>
 
@@ -443,7 +463,8 @@ export function FirstProductForm() {
                           </div>
                         </FormControl>
                         <FormDescription className="text-center text-xs text-slate-500 mt-3">
-                          Add a cover image for your service. PNG, JPG up to 5MB.
+                          Add a cover image for your service. PNG, JPG up to
+                          5MB.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -459,7 +480,7 @@ export function FirstProductForm() {
                     Service Details
                   </h2>
                   <p className="text-sm text-slate-400 mt-1">
-                    Describe your service offering
+                    Tell customers what you offer
                   </p>
                 </div>
 

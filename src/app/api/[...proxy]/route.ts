@@ -28,8 +28,29 @@ async function makeRequestWithRetry(request: NextRequest, method: string) {
     });
 
     console.log('Backend response status:', response.status);
-    const responseData = await response.clone().json();
-    console.log('Backend response data:', responseData);
+    
+    // Handle 404 responses explicitly
+    if (response.status === 404) {
+      return NextResponse.json(
+        { error: 'Resource not found' },
+        { status: 404 }
+      );
+    }
+
+    // Try to parse JSON response, but handle cases where it's not JSON
+    let responseData;
+    try {
+      responseData = await response.clone().json();
+      console.log('Backend response data:', responseData);
+    } catch (parseError) {
+      console.error('Failed to parse JSON response:', parseError);
+      const textResponse = await response.clone().text();
+      console.log('Raw response:', textResponse);
+      return NextResponse.json(
+        { error: 'Invalid response format' },
+        { status: response.status }
+      );
+    }
 
     if (response.status === 401) {
       // Token expired, get a new token and retry once

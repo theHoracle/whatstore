@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react";
+import { ChevronRight, Target, type LucideIcon } from "lucide-react";
 
 import {
   Collapsible,
@@ -39,6 +39,17 @@ export function NavMain({
     <SidebarGroup>
       <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
       <SidebarMenu>
+       <SidebarMenuItem>
+          <SidebarMenuButton
+            asChild
+            className="flex"
+          >
+            <a href="/vendor">
+              <Target />
+              <span>Overview</span>
+            </a>
+          </SidebarMenuButton>
+        </SidebarMenuItem> 
         {items.map((item) => (
           <Collapsible
             key={item.title}

@@ -18,18 +18,38 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import Image from "next/image"
+
+interface Team {
+  id: number;
+  name: string;
+  logo: string;
+  plan: string;
+  isActive?: boolean;
+}
 
 export function TeamSwitcher({
   teams,
+  onStoreSelect,
+  activeStoreId,
 }: {
-  teams: {
-    name: string
-    logo: React.ElementType
-    plan: string
-  }[]
+  teams: Team[];
+  onStoreSelect?: (id: number) => void;
+  activeStoreId?: number | null ;
 }) {
   const { isMobile } = useSidebar()
-  const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  
+  console.log("activeStore", activeStoreId, "teams", teams)
+  const [activeTeam, setActiveTeam] = React.useState<Team>(
+    teams.find((team) => team.id === activeStoreId) || teams[0]
+  )
+
+  const handleTeamChange = (team: Team) => {
+    setActiveTeam(team);
+    if (onStoreSelect && team.id !== undefined) {
+      onStoreSelect(team.id);
+    }
+  };
 
   if (!activeTeam) {
     return null
@@ -45,7 +65,15 @@ export function TeamSwitcher({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <activeTeam.logo className="size-4" />
+                <div>
+                  <Image 
+                  width={10}
+                  height={10}
+                  src={activeTeam.logo}
+                  alt="Store Logo"
+                  className="rounded-full"
+                  />
+                </div>
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{activeTeam.name}</span>
@@ -61,16 +89,16 @@ export function TeamSwitcher({
             sideOffset={4}
           >
             <DropdownMenuLabel className="text-muted-foreground text-xs">
-              Teams
+              Stores
             </DropdownMenuLabel>
             {teams.map((team, index) => (
               <DropdownMenuItem
                 key={team.name}
-                onClick={() => setActiveTeam(team)}
+                onClick={() => handleTeamChange(team)}
                 className="gap-2 p-2"
               >
                 <div className="flex size-6 items-center justify-center rounded-md border">
-                  <team.logo className="size-3.5 shrink-0" />
+                  {/* team logo */}
                 </div>
                 {team.name}
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
@@ -81,7 +109,7 @@ export function TeamSwitcher({
               <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
                 <Plus className="size-4" />
               </div>
-              <div className="text-muted-foreground font-medium">Add team</div>
+              <div className="text-muted-foreground font-medium">Create new store</div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

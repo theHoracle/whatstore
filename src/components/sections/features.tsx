@@ -2,38 +2,38 @@ import { Terminal, Store, ShoppingCart, Shield, Zap, BarChart3 } from "lucide-re
 
 const features = [
   {
-    title: "Lightning Fast Setup",
-    description: "Get your digital store up and running in minutes with our streamlined onboarding process.",
+    title: "Quick Setup",
+    description: "Get your online store up and running in minutes with our simple onboarding process.",
     icon: Zap,
     gradient: "from-amber-500 to-orange-500",
   },
   {
     title: "Secure Marketplace",
-    description: "Enterprise-grade security protecting both vendors and buyers, with secure payment processing and delivery.",
+    description: "Enterprise-grade security protecting both sellers and buyers, with secure payment processing.",
     icon: Shield,
     gradient: "from-blue-500 to-cyan-500",
   },
   {
     title: "Smart Analytics",
-    description: "Comprehensive insights and AI-powered recommendations to grow your digital product business.",
+    description: "Comprehensive insights and AI-powered recommendations to grow your business.",
     icon: BarChart3,
     gradient: "from-purple-500 to-pink-500",
   },
   {
-    title: "Easy Product Management",
-    description: "Upload and manage your digital products effortlessly with support for multiple file formats.",
+    title: "Easy Management",
+    description: "Powerful tools to manage your products, services, orders, and customer relationships.",
     icon: Terminal,
     gradient: "from-green-500 to-emerald-500",
   },
   {
-    title: "Vendor Dashboard",
-    description: "Powerful tools to track sales, manage inventory, and optimize your store's performance.",
+    title: "Flexible Store",
+    description: "Sell anything - physical products, digital goods, or professional services, all in one place.",
     icon: Store,
     gradient: "from-red-500 to-pink-500",
   },
   {
-    title: "Seamless Shopping",
-    description: "Intuitive shopping experience with instant digital delivery for your customers.",
+    title: "Customer Experience",
+    description: "Create seamless shopping experiences with customizable storefronts and easy checkout.",
     icon: ShoppingCart,
     gradient: "from-indigo-500 to-purple-500",
   },
