@@ -9,7 +9,7 @@ interface ProductsResponse {
   per_page: number;
 }
 
-export const getStoreProducts = () => {
+export const useStoreProducts = () => {
   return useQuery({
     queryKey: ["vendor-products"],
     queryFn: async () => {

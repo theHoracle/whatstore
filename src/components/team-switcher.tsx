@@ -25,7 +25,7 @@ interface Team {
   name: string;
   logo: string;
   plan: string;
-  isActive?: boolean;
+  isActive: boolean;
 }
 
 export function TeamSwitcher({
@@ -41,8 +41,14 @@ export function TeamSwitcher({
   
   console.log("activeStore", activeStoreId, "teams", teams)
   const [activeTeam, setActiveTeam] = React.useState<Team>(
-    teams.find((team) => team.id === activeStoreId) || teams[0]
+    teams.find((team) => team.isActive) || teams[0]
   )
+
+  React.useEffect(() => {
+    const active = teams.find((team) => team.isActive) || teams[0];
+    if (active) setActiveTeam(active);
+  }, [teams]);
+
 
   const handleTeamChange = (team: Team) => {
     setActiveTeam(team);
@@ -52,6 +58,7 @@ export function TeamSwitcher({
   };
 
   if (!activeTeam) {
+    console.log("teams", teams, "\n active team", activeTeam)
     return null
   }
 

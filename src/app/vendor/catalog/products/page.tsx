@@ -20,7 +20,7 @@ export default function StoreProductsPage() {
           <p className="text-muted-foreground">Manage products for this store</p>
         </div>
         <Link 
-          href={`/vendor/catalog/new`}
+          href={`/vendor/catalog/new?item=product`}
           className="inline-flex items-center justify-center h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 
           rounded-md text-sm font-medium transition-all duration-200 shadow-sm hover:shadow
           active:scale-[0.98]"
